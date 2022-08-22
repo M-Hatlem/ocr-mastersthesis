@@ -20,7 +20,7 @@ def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
     return cv2.resize(image, dim, interpolation=inter)
 
 #Draw a box around each letter
-def box_letters(img):
+def box_letters(img, pro_img):
     h, w, c = img.shape
     boxes = pytesseract.image_to_boxes(img)
     for b in boxes.splitlines():
@@ -33,8 +33,8 @@ def box_letters(img):
 
 
 #Draw a box around each word
-def box_words(img):
-    d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+def box_words(img, pro_img):
+    d = pytesseract.image_to_data(pro_img, output_type=pytesseract.Output.DICT)
     #print(d.keys())
 
     n_boxes = len(d['text'])
@@ -42,14 +42,17 @@ def box_words(img):
         if int(float(d['conf'][i])) > 60:
             (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
             img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            pro_img = cv2.rectangle(pro_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     resize = ResizeWithAspectRatio(img, height=1080)
     cv2.imshow('resize', resize)
+    pro_resize = ResizeWithAspectRatio(pro_img, height=1080)
+    cv2.imshow('pro_resize', pro_resize)
     cv2.waitKey(0)
 
 
 #Draw a box around a pattern
-def box_pattern(img):
+def box_pattern(img, pro_img):
     d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
     keys = list(d.keys())
 
@@ -72,27 +75,17 @@ def box_pattern(img):
 def get_grayscale(image):
     return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# thresholding
-def thresholding(image):
-    return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-
 
 #canny edge detection
-#TODO Works well!??
 def canny(image):
-    return cv2.Canny(image, 100, 200)
-
-#opening - erosion followed by dilation
-def opening(image):
-    kernel = np.ones((5,5),np.uint8)
-    return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+    return cv2.Canny(image, 150, 200, True)
 
 
 def gray_dialate(img):
     # Convert to gray
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # TODO Binarize!
+    # TODO Binarize better!
     img = canny(img)
 
     # Apply dilation and erosion to remove some noise
@@ -113,10 +106,10 @@ if __name__ == "__main__":
     img = cv2.resize(img, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
 
 
-    img = gray_dialate(img)
+    pro_img = gray_dialate(img)
 
 
-    box_words(img)
-    #box_letters(img)
-    #box_pattern(img)
-    print(pytesseract.image_to_string(img))
+    box_words(img, pro_img)
+    #box_letters(img, pro_img)
+    #box_pattern(img, pro_img)
+    print(pytesseract.image_to_string(pro_img))
