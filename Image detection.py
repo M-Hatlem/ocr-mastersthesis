@@ -25,7 +25,7 @@ def box_letters(img, pro_img):
     boxes = pytesseract.image_to_boxes(img)
     for b in boxes.splitlines():
         b = b.split(' ')
-        img = cv2.rectangle(img, (int(b[1]), h - int(b[2])), (int(b[3]), h - int(b[4])), (0, 255, 0), 2)
+        img = cv2.rectangle(img, (int(b[1]), h - int(b[2])), (int(b[3]), h - int(b[4])), (0, 0, 255), 2)
 
     resize = ResizeWithAspectRatio(img, height=1080)
     cv2.imshow('resize', resize)
@@ -82,11 +82,20 @@ def canny(image):
 
 
 def gray_dialate(img):
-    # Convert to gray
+
+    # TODO remove color
+    #black = np.array([0, 0, 0])
+    #img = cv2.inRange(img, black, black)
+
+    # TODO Convert to gray
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+
+    #img = canny(img)
     # TODO Binarize better!
-    img = canny(img)
+    _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    img = cv2.bitwise_not(img)
+
 
     # Apply dilation and erosion to remove some noise
     kernel = np.ones((1, 1), np.uint8)
@@ -94,12 +103,15 @@ def gray_dialate(img):
     img = cv2.erode(img, kernel, iterations=1)
     # Apply blur to smooth out the edges
     img = cv2.GaussianBlur(img, (5, 5), 0)
+
+
+
     return img
 
 
 if __name__ == "__main__":
     #img = cv2.imread("Images/IMG_0891.jpg")
-    img = cv2.imread("Images/IMG_0892.jpg")
+    img = cv2.imread("Images/IMG_0894.jpg")
 
     #TESTING
     #Rescale to 300DPI
@@ -109,7 +121,15 @@ if __name__ == "__main__":
     pro_img = gray_dialate(img)
 
 
+    print(pytesseract.image_to_string(pro_img))
     box_words(img, pro_img)
     #box_letters(img, pro_img)
     #box_pattern(img, pro_img)
-    print(pytesseract.image_to_string(pro_img))
+
+
+
+    # TODO
+    # Get image read
+    # Find patterns of text from casettes
+    # report missing patterns
+    # show correct patterns
