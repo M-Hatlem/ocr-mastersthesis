@@ -3,6 +3,11 @@ import pytesseract
 import numpy as np
 import re as re
 
+def find_pattern(img):
+    text = pytesseract.image_to_string(img)
+    found = re.findall(r"HBE \d{5}\n\d{3} [O|B|C]\d{2}", text) # pattern here--- should be r"HBE \d{5}\n\d{3} [O|B|C]\d{2}$
+    return(found)
+
 #rezise image for showing
 def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
     dim = None
@@ -36,6 +41,9 @@ def box_letters(img, pro_img):
 def box_words(img, pro_img):
     d = pytesseract.image_to_data(pro_img, output_type=pytesseract.Output.DICT)
     #print(d.keys())
+
+    pattern = find_pattern(pro_img)
+    print(pattern)
 
     n_boxes = len(d['text'])
     for i in range(n_boxes):
@@ -104,8 +112,6 @@ def gray_dialate(img):
     # Apply blur to smooth out the edges
     img = cv2.GaussianBlur(img, (5, 5), 0)
 
-
-
     return img
 
 
@@ -121,15 +127,15 @@ if __name__ == "__main__":
     pro_img = gray_dialate(img)
 
 
-    print(pytesseract.image_to_string(pro_img))
+    #print(pytesseract.image_to_string(pro_img)) # Prints the image text
     box_words(img, pro_img)
     #box_letters(img, pro_img)
     #box_pattern(img, pro_img)
 
-
+    #pattern = r"HBE \d{5}\n\d{3} [O|B|C]\d{2}$"
 
     # TODO
     # Get image read
-    # Find patterns of text from casettes
+    # Find patterns of text from casettes # Patteren is HBE (HELSE BERGEN) - ID (5 digit number) - (new line) - sample number (3 digits) - department and year - B/A/C - 2 digits)
     # report missing patterns
     # show correct patterns
