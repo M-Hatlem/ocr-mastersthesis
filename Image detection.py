@@ -32,26 +32,44 @@ def find_pattern_matches(img, custom_config):
 
 # Draw a box around each sentence and show the image TODO Make sentences
 def box(img, pro_img):
-    custom_config = r' -c tessedit_char_whitelist="HBEhbeOoCc0123456789 "' # TODO FIX
+    custom_config = r' -c tessedit_char_whitelist="HBECO0123456789 " --psm 3' # TODO FIX
     d = pytesseract.image_to_data(pro_img, output_type=pytesseract.Output.DICT, config=custom_config)
-    pattern = r"\s?HBE\d{5}\d{3}[O|B|C]\d{2}$"
+    pattern = r"HBE\d{5}\d{3}[O|B|C]\d{2}$"
+
+
+
+    #TODO turn all of d[text] into string and then pre process the sting from there before applying regexp?? or will i loose find coordiantes??
+
+
+    # Remove all empty strings the OCR interpreted lables / text cleaning
+    d['text'] = [x.strip(' ') for x in d['text']]
+    n_boxes = len(d['text'])
+    words = []
+    for i in range(n_boxes):
+        if len(d['text'][i]) > 0:
+            words.append(i)
 
     #print((d['text'])) # TODO TEST LINE
-
-    n_boxes = len(d['text'])
-    for i in range(n_boxes):
+    #print(words) # TODO TEST LINE
+    # Iterate on the text and draw boxes where the pattern is found
+    found = []
+    for i in words:
         try:
             # Looks at each word and the five next words to see if it matches the pattern
-            if re.match(pattern, d['text'][i] + d['text'][i + 1] + d['text'][i + 2] + d['text'][i + 3] + d['text'][i + 4]):
+            if re.match(pattern, d['text'][i] + d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]]): # Alternative  re.match(pattern, d['text'][i] + d['text'][i + 1] + d['text'][i + 3] + d['text'][i + 4])
+                found.append(d['text'][i] + d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]])
+                #print(d['text'][i] + d['text'][i + 1] + d['text'][i + 3] + d['text'][i + 4]) # TODO TEST LINE
                 #print(d['text'][i] + d['text'][i + 1] + d['text'][i + 2] + d['text'][i + 3] + d['text'][i + 4]) # TODO TEST LINE
                 # if there is a pattern match, get the coordinates draw a green box/rectangle the words.
                 (x, y) = (d['left'][i], d['top'][i])
-                (w1, h1, w2, h2) = (d['width'][i], d['height'][i], d['width'][i+1], d['height'][i+3])
+                (w1, h1, w2, h2) = (d['width'][i], d['height'][i], d['width'][words[words.index(i)+1]], d['height'][words[words.index(i)+3]])
                 img = cv2.rectangle(img, (x, y), (x + w1 + w2, y + h1 + h2), (0, 255, 0), 12)
         except:
             pass
 
-    print(len(find_pattern_matches(pro_img, custom_config))) # TODO TEST LINE
+    print(found) # TODO TEST LINE
+    print(len(found)) # TODO TEST LINE
+    #print(len(find_pattern_matches(pro_img, custom_config))) # TODO TEST LINE
 
     #Display the images in python, can be removed once UI is added
     resize = ResizeWithAspectRatio(img, height=1080)
@@ -81,6 +99,7 @@ def pre_process(img):
     # Apply blur to smooth out the edges
     img = cv2.GaussianBlur(img, (5, 5), 0)
 
+
     return img
 
 
@@ -98,10 +117,10 @@ if __name__ == "__main__":
     pro_img = pre_process(img)
 
     #Testing for PSM
-    #custom_config = r' -c tessedit_char_whitelist="HBEhbeOoCc0123456789 "#
+    #custom_config = r' -c tessedit_char_whitelist="HBEOC0123456789 "'
     #print(pytesseract.image_to_string(pro_img, config=custom_config)) # Prints the image text
     #print(len(find_pattern_matches(pro_img, custom_config)))
-
+    #quit()
 
 
     box(img, pro_img)
