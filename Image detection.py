@@ -46,8 +46,11 @@ def box(img, pro_img):
     n_boxes = len(d['text'])
     words = []
     for i in range(n_boxes):
-        if len(d['text'][i]) > 0:
+        if len(d['text'][i]) > 1:
             words.append(i)
+
+    #for i in words:# TODO TEST LINE
+    #    print(d['text'][i])     # TODO TEST LINE
 
     print((d['text'])) # TODO TEST LINE
     #print(words) # TODO TEST LINE
@@ -79,6 +82,7 @@ def box(img, pro_img):
     cv2.waitKey(0)
 
 
+
 # This function pre-processes the images
 def pre_process(img):
     # TODO edit color on grey cassetes? use a map or filter?
@@ -86,11 +90,11 @@ def pre_process(img):
     # Convert image to greyscale
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+    #Equalize image to remove noise TODO did not work
+    #equ_img = cv2.equalizeHist(img_gray)
+
     # Binarize the image with a threshold function making the pixels either black or white
     _, img_thres = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
-
-    # Apply dilation, erosion and blur to remove some noise and make the image easier to read
 
 
     # Noice removal and contour filtering
@@ -108,15 +112,21 @@ def pre_process(img):
     #cv2.waitKey(0)
     #quit()
     mask = 255 - mask
+
     img_pros = cv2.bitwise_and(img_thres, img_thres, mask=mask)
     img_pros = 255 - img_pros
 
+
     # TODO fine tune these parameters
+    # Apply dilation, erosion and blur to remove some noise and make the image easier to read
     #kernel = np.ones((3, 3),  np.float32) / 9
+    kernel = np.ones((5,5),np.uint8)
     #img_pros = cv2.erode(img_pros, kernel, iterations=1)
     #img_pros = cv2.dilate(img_pros, kernel, iterations=1)
+    #img_pros = cv2.morphologyEx(img_pros, cv2.MORPH_OPEN, kernel)
     # Apply blur to smooth out the edges
     img_pros = cv2.GaussianBlur(img_pros, (5, 5), 0)
+    #img_pros = cv2.medianBlur(img_pros, 5)
 
     return img_pros
 
