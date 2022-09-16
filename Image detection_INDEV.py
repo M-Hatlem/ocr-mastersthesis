@@ -67,7 +67,7 @@ def box(img, pro_img):
                 (x, y) = (d['left'][i], d['top'][i])
                 (w1, h1, w2, h2) = (d['width'][i], d['height'][i], d['width'][words[words.index(i)+1]], d['height'][words[words.index(i)+3]])
                 img = cv2.rectangle(img, (x, y), (x + w1 + w2, y + h1 + h2), (0, 255, 0), 12)
-        except: #TODO EXCEPT OUT OF RANGE..
+        except IndexError:
             pass
 
     print(found) # TODO TEST LINE
