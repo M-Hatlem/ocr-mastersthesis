@@ -1,0 +1,22 @@
+{
+  "name": "ocr-pathology",
+  "version": "1.0.0",
+  "description": "An OCR tool for the pathology department at Haukeland University Hospital",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M-Hatlem/ocr-master.git"
+  },
+  "author": "Markus Hatlem",
+  "bugs": {
+    "url": "https://github.com/M-Hatlem/ocr-master/issues"
+  },
+  "homepage": "https://github.com/M-Hatlem/ocr-master#readme",
+  "dependencies": {
+    "electron": "^20.1.4",
+    "node-fetch": "^3.2.10"
+  }
+}
