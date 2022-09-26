@@ -2,7 +2,7 @@ import cv2
 import pytesseract
 import re as re
 import json
-from flask import Flask
+from flask import Flask, send_file
 
 app = Flask(__name__)
 
@@ -57,11 +57,10 @@ def pre_process(img):
 
     return img_pros
 
-@app.route("/<input>")
 
-def process(input):
-    img = cv2.imread("Python/Images/IMG_0894.jpg") # TODO Temp
-    #img = cv2.imread(input) # TODO Temp
+@app.route('/api/image/<path:url>',)
+def process(url):
+    img = cv2.imread(url)
     # Rescale to 300DPI #TODO adjust for final camera setup
     img = cv2.resize(img, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
     pro_img = pre_process(img)
