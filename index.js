@@ -1,7 +1,8 @@
+// This file contains the required code to run the Electrong GUI and the python backend
+
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-
 
 const createWindow = () => {
   // Create the browser window.
@@ -9,7 +10,8 @@ const createWindow = () => {
     width: 1200,
     height: 800,
     webPreferences: {
-      //preload: path.join(__dirname, 'preload.js')
+      //Load preload scripts
+      //preload: path.join(__dirname, 'functions.js')
     }
   
   })
@@ -61,6 +63,8 @@ app.whenReady().then(() => {
   })
 })
 
+
+// Starts the Python backend on startup
 app.on('ready', StartPy)
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -70,13 +74,11 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
 
+
+//Kills the python backend on applicaton exit
 app.on('will-quit', exitPy)
 
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-const SERVER_URL = "http://127.0.0.1:5000/ + IMAGE_LINK";
-//fetch(`SERVER_URL`)  // TODO FIX HERE!!!
-  //.then((response) => response.json())
-  //.then((data) => console.log(data));

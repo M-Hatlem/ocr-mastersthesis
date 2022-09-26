@@ -1,0 +1,15 @@
+Database
+	* DB schema
+	* hosting DB
+
+Gui
+	* DB SEARCH
+	* DB ADD
+
+Backend
+	* Cassete loaction: north, south, west, east
+	* Almost correct cassete deteceten (split regexp and see if more than 3 or mathces)? 3 matches = orange boarder and separate list, 4 = green
+
+JS 
+	* Clear all functions and reload
+	* camera input to backend

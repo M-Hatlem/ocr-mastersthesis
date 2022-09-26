@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <meta charset="UTF-8">
     <title>OCR Tool</title>
   </head>
-  <body>
-    <h1>Image HERE</h1>
+    <body>
+
+      <div class="page-1">
+        <h1>Image HERE</h1>
+        <!-- <button type="button" id="Take_img_btn"onclick="take_image()">Take Image</button> -->
+        <input type="file" id="image-input" accept="image/jpeg, image/png, image/jpg" onchange="upload_image()">
+    </div>
+
+    <div class="loading">
+      <img src="assets/Loading_icon.gif" alt="Loading icon" load_ico.id="load-ico">
+      <p id="load-txt">LOADING...</p>
+    </div>
+    <div class="image">
+        <canvas id="canvas"></canvas>
+    </div>
+
   </body>
+  <script src="./functions.js"></script>
 </html>

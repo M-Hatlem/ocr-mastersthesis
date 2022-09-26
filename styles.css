@@ -1,0 +1,28 @@
+.page-1 {
+    margin: auto;
+    width: 50%;
+    text-align: center;
+}
+
+.loading {
+    margin: auto;
+    width: 50%;
+    text-align: center;
+    display: none;
+}
+
+.image {
+    margin: auto;
+    width: 50%;
+    text-align: center;
+}
+
+.image > img{
+    display: none;
+    
+}
+
+.image > canvas{
+    display: none;
+    height: 600px;
+}
