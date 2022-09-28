@@ -21,6 +21,8 @@ function take_image() {
 
 // Formating the image with the data from the backend to highlight the detected casettes
 function format_image(image, data_list) {
+    complete = data_list[0] // fully identified entries
+    partial = data_list[1] // partially identified entries
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     var img = document.createElement("img");
@@ -29,10 +31,24 @@ function format_image(image, data_list) {
         canvas.width = img.width*1.5
         canvas.height = img.height*1.5
         context.drawImage(img, 0, 0, img.width*1.5, img.height*1.5);
-        for (i=0; i< data_list.length; i++) {
+        
+        for (i=0; i< complete.length; i++) {
             context.beginPath();
-            context.rect(data_list[i][1], data_list[i][2], data_list[i][3] * 2.5, data_list[i][4] * 2.5);
+            context.rect(complete[i][1], complete[i][2], complete[i][3] * 2.5, complete[i][4] * 2.5);
+            context.shadowColor = "black"
+            context.shadowBlur = 20;
+            context.lineJoin = "bevel";
             context.strokeStyle = 'LawnGreen';
+            context.lineWidth = 15;
+            context.stroke();
+        }
+        for (i=0; i< partial.length; i++) {
+            context.beginPath();
+            context.rect(partial[i][1], partial[i][2], partial[i][3] * 2.5, partial[i][4] * 2.5);
+            context.shadowColor = "black"
+            context.shadowBlur = 20;
+            context.lineJoin = "bevel";
+            context.strokeStyle = 'orange';
             context.lineWidth = 15;
             context.stroke();
         }
