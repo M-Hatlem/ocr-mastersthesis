@@ -2,6 +2,7 @@ import cv2
 import pytesseract
 import numpy as np
 import re as re
+import json
 
 
 # rezise image for showing in dev, only needed when viewing in python. Can remove when custom UI is added.
@@ -131,6 +132,75 @@ def pre_process(img):
     return img_pros
 
 
+
+#OLD BOX FUNCTION ONLY 1 REGEXP
+def prod_box(pro_img):
+    custom_config = r' -c tessedit_char_whitelist="HBECO0123456789 " --psm 3'  # Config for tesseract
+    d = pytesseract.image_to_data(pro_img, output_type=pytesseract.Output.DICT, config=custom_config)
+    pattern = r"HBE\d{5}\d{3}[O|B|C]\d{2}$"
+
+    # Remove all empty strings the OCR interpreted lables / text cleaning
+    d['text'] = [x.strip(' ') for x in d['text']]
+    n_boxes = len(d['text'])
+    words = []
+    for i in range(n_boxes):
+        if len(d['text'][i]) > 1:
+            words.append(i)
+
+    # Iterate on the text and draw boxes where the pattern is found
+    found = []
+    for i in words:
+        try:
+            # Looks at each word and the five next words to see if it matches the pattern
+            if re.match(pattern, d['text'][i] + d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]]):
+                found.append([d['text'][i] + d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]], d['left'][i], d['top'][i], d['width'][i], d['height'][i]])
+        except IndexError:
+            pass
+
+    return json.dumps(found)
+
+
+def box_test(pro_img):
+    custom_config = r' -c tessedit_char_whitelist="HBECO0123456789 " --psm 3'  # Config for tesseract
+    d = pytesseract.image_to_data(pro_img, output_type=pytesseract.Output.DICT, config=custom_config)
+
+    # Remove all empty strings the OCR interpreted lables / text cleaning
+    d['text'] = [x.strip(' ') for x in d['text']]
+    n_boxes = len(d['text'])
+    words = []
+    for i in range(n_boxes):
+        if len(d['text'][i]) > 1:
+            words.append(i)
+
+    # Iterate on the text and draw boxes where the pattern is found
+    complete = []
+    partial = []
+    for i in words:
+        try:
+            # Looks at each word and the five next words to see if it matches the pattern
+            pattern_1 = re.match(r"HBE", d['text'][i])
+            pattern_2 = re.match(r"\d{5}", d['text'][words[words.index(i)+1]])
+            pattern_3 = re.match(r"\d{3}", d['text'][words[words.index(i)+2]])
+            pattern_4 = re.match(r"[O|B|C]\d{2}$", d['text'][words[words.index(i)+3]])
+            if [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 0: # If all patterns match correctly then the line is identified
+                complete.append([d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]], d['left'][i], d['top'][i], d['width'][i], d['height'][i]])
+            elif [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 1: # If only 3 patterns match correctly then the line is partly identified
+                if pattern_1 is None:
+                    partial.append([d['text'][words[words.index(i) + 1]] + d['text'][words[words.index(i) + 2]] + d['text'][words[words.index(i) + 3]], d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+                elif pattern_2 is None:
+                    partial.append(["NONE" + d['text'][words[words.index(i) + 2]] + d['text'][words[words.index(i) + 3]], d['left'][i+3], d['top'][i+3],d['width'][i+3], d['height'][i+3]])
+                elif pattern_3 is None:
+                    partial.append([d['text'][words[words.index(i) + 1]] + "NONE" + d['text'][words[words.index(i) + 3]], d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+                elif pattern_4 is None:
+                    partial.append([d['text'][words[words.index(i) + 1]] + d['text'][words[words.index(i) + 2]] + "NONE", d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+        except IndexError:
+            pass
+    print(partial)
+    return json.dumps([complete, partial])
+
+
+
+
 # Tests for running
 if __name__ == "__main__":
     #img = cv2.imread("Images/IMG_0891.jpg")
@@ -154,9 +224,13 @@ if __name__ == "__main__":
 
 
     box(img, pro_img)
+    #box_test(pro_img)
 
 
     # TODO
     #pattern = r"HBE \d{5}\n\d{3} [O|B|C]\d{2}$"
     # find casettes without a pattern
     # Develop a UI
+
+
+

@@ -10,7 +10,6 @@ app = Flask(__name__)
 def box(pro_img):
     custom_config = r' -c tessedit_char_whitelist="HBECO0123456789 " --psm 3'  # Config for tesseract
     d = pytesseract.image_to_data(pro_img, output_type=pytesseract.Output.DICT, config=custom_config)
-    pattern = r"HBE\d{5}\d{3}[O|B|C]\d{2}$"
 
     # Remove all empty strings the OCR interpreted lables / text cleaning
     d['text'] = [x.strip(' ') for x in d['text']]
@@ -21,16 +20,29 @@ def box(pro_img):
             words.append(i)
 
     # Iterate on the text and draw boxes where the pattern is found
-    found = []
+    complete = []
+    partial = []
     for i in words:
         try:
             # Looks at each word and the five next words to see if it matches the pattern
-            if re.match(pattern, d['text'][i] + d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]]):
-                found.append([d['text'][i] + d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]], d['left'][i], d['top'][i], d['width'][i], d['height'][i]])
+            pattern_1 = re.match(r"HBE", d['text'][i])
+            pattern_2 = re.match(r"\d{5}", d['text'][words[words.index(i)+1]])
+            pattern_3 = re.match(r"\d{3}", d['text'][words[words.index(i)+2]])
+            pattern_4 = re.match(r"[O|B|C]\d{2}$", d['text'][words[words.index(i)+3]])
+            if [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 0: # If all patterns match correctly then the line is identified
+                complete.append([d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]], d['left'][i], d['top'][i], d['width'][i], d['height'][i]])
+            elif [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 1: # If only 3 patterns match correctly then the line is partly identified
+                if pattern_1 is None:
+                    complete.append([d['text'][words[words.index(i) + 1]] + d['text'][words[words.index(i) + 2]] + d['text'][words[words.index(i) + 3]], d['left'][i+3]*0.90, d['top'][i+3]*0.90,d['width'][i+3]*0.5, d['height'][i+3]*0.5]) # Can be added to complete as hbe is mainly used for coordinates
+                elif pattern_2 is None:
+                    partial.append(["NONE" + d['text'][words[words.index(i) + 2]] + d['text'][words[words.index(i) + 3]], d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+                elif pattern_3 is None:
+                    partial.append([d['text'][words[words.index(i) + 1]] + "NONE" + d['text'][words[words.index(i) + 3]], d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+                elif pattern_4 is None:
+                    partial.append([d['text'][words[words.index(i) + 1]] + d['text'][words[words.index(i) + 2]] + "NONE", d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
         except IndexError:
             pass
-
-    return json.dumps(found)
+    return json.dumps([complete, partial])
 
 
 # This function pre-processes the images
