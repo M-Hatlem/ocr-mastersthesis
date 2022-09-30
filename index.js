@@ -18,17 +18,14 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
-
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 }
-
 
 const StartPy = () => {
   pyProc = require('child_process').spawn('./Python/venv/Scripts/python',["./Python/Image_detection.py"])
   if (pyProc != null) {
     console.log('child process success')
-
   }
   //print python errors
   pyProc.stderr.on('data', (data) => {

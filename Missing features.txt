@@ -7,9 +7,21 @@ Gui
 	* DB ADD
 
 Backend
-	* Cassete loaction: north, south, west, east
-	* Almost correct cassete deteceten (split regexp and see if more than 3 or mathces)? 3 matches = orange boarder and separate list, 4 = green
+	* Cassete loaction: north, south, west, east -- just check image height /2 and see if it is in top/bottom haf, then repeat for width and east/west
 
 JS 
-	* Clear all functions and reload
+	* Clear all functions and reload -- electron function??
 	* camera input to backend
+
+
+
+bubbles. alert that shows info and can rewrite it
+info saved in new list accesible by all. completed automatically in this list. 
+bubble info cheked by regexp when closed
+add info to complete list
+if partial list is not empty, cannot push to server
+
+make rect..
+open popup bubble, write info with regexp check... reuse earlier code..
+adde to complete list
+add coorinates to a seperate search_box() list with a rezise of 0... 
