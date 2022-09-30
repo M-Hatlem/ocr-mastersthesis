@@ -30,16 +30,24 @@ def box(pro_img):
             pattern_3 = re.match(r"\d{3}", d['text'][words[words.index(i)+2]])
             pattern_4 = re.match(r"[O|B|C]\d{2}$", d['text'][words[words.index(i)+3]])
             if [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 0: # If all patterns match correctly then the line is identified
-                complete.append([d['text'][words[words.index(i)+1]] + d['text'][words[words.index(i)+2]] + d['text'][words[words.index(i)+3]], d['left'][i], d['top'][i], d['width'][i], d['height'][i]])
+                # patters is listed as [STRING WITH CODE, LEFT, TOP, WIDTH, HEIGHT] Width and Height are addtionally calulated to include the length of the entire casette
+                # top and left is pixel coordinates. Width and height is the legnth of the words in pixels
+                complete.append([d['text'][words[words.index(i)+1]] + "-" + d['text'][words[words.index(i)+2]] + "-" + d['text'][words[words.index(i)+3]],
+                                 d['left'][i], d['top'][i], d['left'][i+1] + d['width'][i+1] - d['left'][i], d['top'][i+2] + d['height'][i+2] - d['top'][i]])
             elif [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 1: # If only 3 patterns match correctly then the line is partly identified
                 if pattern_1 is None:
-                    complete.append([d['text'][words[words.index(i) + 1]] + d['text'][words[words.index(i) + 2]] + d['text'][words[words.index(i) + 3]], d['left'][i+3]*0.90, d['top'][i+3]*0.90,d['width'][i+3]*0.5, d['height'][i+3]*0.5]) # Can be added to complete as hbe is mainly used for coordinates
+                    # pattern 1 can be added to complete as hbe is mainly used for coordinates
+                    complete.append([d['text'][words[words.index(i) + 1]] + "-" + d['text'][words[words.index(i) + 2]] + "-" + d['text'][words[words.index(i) + 3]],
+                                     d['left'][i+1], d['top'][i+1], d['width'][i+1], d['height'][i+1]])
                 elif pattern_2 is None:
-                    partial.append(["NONE" + d['text'][words[words.index(i) + 2]] + d['text'][words[words.index(i) + 3]], d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+                    partial.append(["NONE" + "-" + d['text'][words[words.index(i) + 2]] + "-" + d['text'][words[words.index(i) + 3]],
+                                    d['left'][i], d['top'][i], d['left'][i+3] + d['width'][i+3] - d['left'][i], d['top'][i+3] + d['height'][i+3] - d['top'][i]])
                 elif pattern_3 is None:
-                    partial.append([d['text'][words[words.index(i) + 1]] + "NONE" + d['text'][words[words.index(i) + 3]], d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+                    partial.append([d['text'][words[words.index(i) + 1]] + "-" + "NONE" + "-" + d['text'][words[words.index(i) + 3]],
+                                    d['left'][i], d['top'][i], d['left'][i+1] + d['width'][i+1] - d['left'][i], d['top'][i+3] + d['height'][i+3] - d['top'][i]])
                 elif pattern_4 is None:
-                    partial.append([d['text'][words[words.index(i) + 1]] + d['text'][words[words.index(i) + 2]] + "NONE", d['left'][i], d['top'][i],d['width'][i], d['height'][i]])
+                    partial.append([d['text'][words[words.index(i) + 1]] + "-" + d['text'][words[words.index(i) + 2]] + "-" + "NONE",
+                                    d['left'][i], d['top'][i], d['left'][i+1] + d['width'][i+1] - d['left'][i], d['top'][i+2] + d['height'][i+2] - d['top'][i]])
         except IndexError:
             pass
     return json.dumps([complete, partial])
@@ -53,7 +61,7 @@ def pre_process(img):
     # Binarize the image with a threshold function making the pixels either black or white
     _, img_thres = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-    # Noice removal and contour filtering using a mask
+    # Noise removal and contour filtering using a mask
     cnts = cv2.findContours(img_thres, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     mask = img_thres.copy()
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
