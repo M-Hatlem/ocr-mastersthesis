@@ -66,21 +66,74 @@ function draw_boxes(list, color, context) {
     }
 }
 
-// Searches to see if x and y is within a box
+// Searches to see if x and y is within a box, then open a casette window
 function search_box(list, x, y, resize) {
     for (i=0; i< list.length; i++) {
-        if (y > list[i][2]/resize && y < list[i][2]/resize  + list[i][4]/resize  && x > list[i][1]/resize  && x < list[i][1]/resize  + list[i][3]/resize ) {
-            casette_window(list[i][0])
+        var text = list[i][0]
+        var left = list[i][1]/resize
+        var top = list[i][2]/resize
+        var width = list[i][3]/resize
+        var height = list[i][4]/resize
+        if (y > top && y < top  + height  && x > left  && x < left  + width ) {
+            var popup = document.getElementById("Popup");
+            var popup_text = document. getElementsByClassName("popuptext");
+            var canvas = document.getElementById('canvas');
+            if (popup.classList[1] != "show") {
+                popup.style.left = (left + (width/2) + canvas.offsetLeft) +"px";
+                popup.style.top = (top + canvas.offsetTop) + "px";
+                text = text.replace("NONE", "")
+                values = text.split("-")
+                popup_text[0].value = values[0]
+                popup_text[1].value = values[1]
+                popup_text[2].value = values[2]
+                popup.classList.add("show");
+            }
         }
     }
 }
 
+//closese the casette window if all inputs match correct pattern, otherwise highlight the missing value
+function close_popup() {
+    var popup = document.getElementById("Popup");
+    var popup_text = document. getElementsByClassName("popuptext");
+    console.log(String(/\d{5}/.test(popup_text[0].value)) + String(/\d{3}/.test(popup_text[1].value)) + String(/[O|B|C]\d{2}$/.test(popup_text[2].value)))
+    switch(String(/\d{5}/.test(popup_text[0].value)) + String(/\d{3}/.test(popup_text[1].value)) + String(/[O|B|C]\d{2}$/.test(popup_text[2].value)))
+        {    
+        case "truetruetrue":
+            popup.classList.remove("show")
+            popup_text[0].style.borderColor = "dimgrey";
+            popup_text[1].style.borderColor = "dimgrey"
+            popup_text[2].style.borderColor = "dimgrey";
+            break;
+        case "falsetruetrue":
+            popup_text[0].style.borderColor = "red"
+            break;
+        case "truefalsetrue":
+            popup_text[1].style.borderColor = "red"
+            break;
+        case "truetruefalse":
+            popup_text[2].style.borderColor = "red"
+            break;
+        case "truefalsefalse":
+            popup_text[1].style.borderColor = "red";
+            popup_text[2].style.borderColor = "red"
+            break;
+        case "falsefalsetrue":
+            popup_text[0].style.borderColor = "red";
+            popup_text[1].style.borderColor = "red"
+            break;
+        case "falsetruefalse":
+            popup_text[0].style.borderColor = "red";
+            popup_text[2].style.borderColor = "red"
+            break;
+        case "falsefalsefalse":
+            popup_text[0].style.borderColor = "red";
+            popup_text[1].style.borderColor = "red";
+            popup_text[2].style.borderColor = "red"
+            break;
+        }
+    } 
 
-// open window with casette information
-function casette_window(text) {
-    console.log(text);
-
-}
 
 
 
@@ -89,5 +142,3 @@ function start_loading() {
     document.getElementsByClassName('page-1')[0].style.display = 'none';
     document.getElementsByClassName('loading')[0].style.display = 'table';
 }
-
-
