@@ -20,9 +20,9 @@ function take_image() {
 
 // Formating the image with the data from the backend to highlight the detected casettes
 function format_image(image, data_list) {
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
-    var img = document.createElement("img");
+    let canvas = document.getElementById('canvas');
+    context = canvas.getContext('2d');
+    let img = document.createElement("img");
     img.src = String(image["path"])
     img.onload = function(){
         canvas.width = img.width*1.5
@@ -36,7 +36,7 @@ function format_image(image, data_list) {
         draw_boxes(partial, "orange", context)
         //add the ability to click on the rectang
         canvas.addEventListener('click', function (event) {
-            var x = event.pageX - canvas.offsetLeft,
+            let x = event.pageX - canvas.offsetLeft,
             y = event.pageY - canvas.offsetTop;
             search_box(complete, x, y, resizer)
             search_box(partial, x, y, resizer)
@@ -48,7 +48,7 @@ function format_image(image, data_list) {
 
         //Remove loading screen, display image
         document.getElementsByClassName('loading')[0].style.display = 'none';
-        document.getElementById('canvas').style.display = 'inline'; 
+        document.getElementById('canvas').style.display = 'inline';
     }
 }
 
@@ -69,24 +69,26 @@ function draw_boxes(list, color, context) {
 // Searches to see if x and y is within a box, then open a casette window
 function search_box(list, x, y, resize) {
     for (i=0; i< list.length; i++) {
-        var text = list[i][0]
-        var left = list[i][1]/resize
-        var top = list[i][2]/resize
-        var width = list[i][3]/resize
-        var height = list[i][4]/resize
+        let text = list[i][0]
+        let left = list[i][1]/resize
+        let top = list[i][2]/resize
+        let width = list[i][3]/resize
+        let height = list[i][4]/resize
         if (y > top && y < top  + height  && x > left  && x < left  + width ) {
-            var popup = document.getElementById("Popup");
-            var popup_text = document. getElementsByClassName("popuptext");
-            var canvas = document.getElementById('canvas');
+            let popup = document.getElementById("Popup");
+            let popup_text = document. getElementsByClassName("popuptext");
+            let canvas = document.getElementById('canvas');
             if (popup.classList[1] != "show") {
                 popup.style.left = (left + (width/2) + canvas.offsetLeft) +"px";
                 popup.style.top = (top + canvas.offsetTop) + "px";
+                original = text
                 text = text.replace("NONE", "")
                 values = text.split("-")
                 popup_text[0].value = values[0]
                 popup_text[1].value = values[1]
                 popup_text[2].value = values[2]
                 popup.classList.add("show");
+                return current_elm = list[i]
             }
         }
     }
@@ -94,47 +96,58 @@ function search_box(list, x, y, resize) {
 
 //closese the casette window if all inputs match correct pattern, otherwise highlight the missing value
 function close_popup() {
-    var popup = document.getElementById("Popup");
-    var popup_text = document. getElementsByClassName("popuptext");
-    console.log(String(/\d{5}/.test(popup_text[0].value)) + String(/\d{3}/.test(popup_text[1].value)) + String(/[O|B|C]\d{2}$/.test(popup_text[2].value)))
-    switch(String(/\d{5}/.test(popup_text[0].value)) + String(/\d{3}/.test(popup_text[1].value)) + String(/[O|B|C]\d{2}$/.test(popup_text[2].value)))
-        {    
-        case "truetruetrue":
-            popup.classList.remove("show")
+    let popup_text = document. getElementsByClassName("popuptext");
+    correct = 0
+    switch (/^\d{5}$/.test(popup_text[0].value)) {
+        case true:
             popup_text[0].style.borderColor = "dimgrey";
-            popup_text[1].style.borderColor = "dimgrey"
-            popup_text[2].style.borderColor = "dimgrey";
+            correct +=1
             break;
-        case "falsetruetrue":
+        case false:
             popup_text[0].style.borderColor = "red"
             break;
-        case "truefalsetrue":
+        }
+    switch (/^\d{3}$/.test(popup_text[1].value)) {
+        case true:
+            popup_text[1].style.borderColor = "dimgrey";
+            correct +=1
+            break;
+        case false:
             popup_text[1].style.borderColor = "red"
             break;
-        case "truetruefalse":
-            popup_text[2].style.borderColor = "red"
+        }
+    switch (/^[O|o|B|b|C|c|]\d{2}$/.test(popup_text[2].value)) {
+        case true:
+            popup_text[2].style.borderColor = "dimgrey";
+            correct +=1
             break;
-        case "truefalsefalse":
-            popup_text[1].style.borderColor = "red";
-            popup_text[2].style.borderColor = "red"
-            break;
-        case "falsefalsetrue":
-            popup_text[0].style.borderColor = "red";
-            popup_text[1].style.borderColor = "red"
-            break;
-        case "falsetruefalse":
-            popup_text[0].style.borderColor = "red";
-            popup_text[2].style.borderColor = "red"
-            break;
-        case "falsefalsefalse":
-            popup_text[0].style.borderColor = "red";
-            popup_text[1].style.borderColor = "red";
+        case false:
             popup_text[2].style.borderColor = "red"
             break;
         }
+    if (correct == 3) {
+        item_update = popup_text[0].value + "-" + popup_text[1].value + "-" + popup_text[2].value
+        update_lists(item_update)
     } 
 
 
+//Update complete and partial lists with selected elements
+function update_lists(item_update) {
+    if (complete.includes(current_elm)) {
+        let i = complete.indexOf(current_elm)
+        complete[i][0] = item_update
+        }
+    else if (partial.includes(current_elm)) {
+        let i = partial.indexOf(current_elm)
+        partial.splice(i, 1)
+        current_elm[0] = item_update
+        complete.push(current_elm)
+        draw_boxes([current_elm], "LawnGreen", context)
+        }
+    let popup = document.getElementById("Popup");
+    popup.classList.remove("show")
+    }
+}
 
 
 //loading screen
@@ -142,3 +155,6 @@ function start_loading() {
     document.getElementsByClassName('page-1')[0].style.display = 'none';
     document.getElementsByClassName('loading')[0].style.display = 'table';
 }
+
+
+

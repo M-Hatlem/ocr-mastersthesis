@@ -8,6 +8,7 @@ Gui
 
 Backend
 	* Cassete loaction: north, south, west, east -- just check image height /2 and see if it is in top/bottom haf, then repeat for width and east/west
+	*Have a chekch too see if number is way out of range from the others,  then add to partial list instead of complete
 
 JS 
 	* Clear all functions and reload -- electron function??
@@ -16,16 +17,9 @@ JS
 
 
 
-info saved in new list accesible by all. completed automatically in this list. 
-bubble info cheked by regexp when closed, if not accepted box will not close and missing element is higlighted with red border
-add info to complete list
 if partial list is not empty, cannot push to server
 
 make rect.. if both search box cheks are false...
 open popup bubble, write info with regexp check... reuse earlier code..
 adde to complete list
 add coorinates to a seperate search_box() list with a rezise of 0... 
-
-
-
-Also, Have a chekch too see if number is way out of range from the others,  then add to partial list instead of complete
