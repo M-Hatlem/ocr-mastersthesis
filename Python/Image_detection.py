@@ -32,22 +32,42 @@ def box(pro_img):
             if [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 0: # If all patterns match correctly then the line is identified
                 # patters is listed as [STRING WITH CODE, LEFT, TOP, WIDTH, HEIGHT] Width and Height are addtionally calulated to include the length of the entire casette
                 # top and left is pixel coordinates. Width and height is the legnth of the words in pixels
-                complete.append([d['text'][words[words.index(i)+1]] + "-" + d['text'][words[words.index(i)+2]] + "-" + d['text'][words[words.index(i)+3]],
-                                 d['left'][i], d['top'][i], d['left'][i+1] + d['width'][i+1] - d['left'][i], d['top'][i+2] + d['height'][i+2] - d['top'][i]])
+                complete.append({
+                    "id": d['text'][words[words.index(i)+1]] + "-" + d['text'][words[words.index(i)+2]] + "-" + d['text'][words[words.index(i)+3]],
+                    "left": d['left'][i],
+                    "top": d['top'][i],
+                    "width": d['left'][i+1] + d['width'][i+1] - d['left'][i],
+                    "height": d['top'][i+2] + d['height'][i+2] - d['top'][i]})
             elif [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 1: # If only 3 patterns match correctly then the line is partly identified
                 if pattern_1 is None:
                     # pattern 1 can be added to complete as hbe is mainly used for coordinates
-                    complete.append([d['text'][words[words.index(i) + 1]] + "-" + d['text'][words[words.index(i) + 2]] + "-" + d['text'][words[words.index(i) + 3]],
-                                     d['left'][i+1], d['top'][i+1], d['width'][i+1], d['height'][i+1]])
+                    complete.append({
+                        "id": d['text'][words[words.index(i) + 1]] + "-" + d['text'][words[words.index(i) + 2]] + "-" + d['text'][words[words.index(i) + 3]],
+                        "left": d['left'][i+1],
+                        "top": d['top'][i+1],
+                        "width": d['width'][i+1],
+                        "height": d['height'][i+1]})
                 elif pattern_2 is None:
-                    partial.append(["NONE" + "-" + d['text'][words[words.index(i) + 2]] + "-" + d['text'][words[words.index(i) + 3]],
-                                    d['left'][i], d['top'][i], d['left'][i+3] + d['width'][i+3] - d['left'][i], d['top'][i+3] + d['height'][i+3] - d['top'][i]])
+                    partial.append({
+                        "id": "NONE" + "-" + d['text'][words[words.index(i) + 2]] + "-" + d['text'][words[words.index(i) + 3]],
+                        "left":   d['left'][i],
+                        "top": d['top'][i],
+                        "width": d['left'][i+3] + d['width'][i+3] - d['left'][i],
+                        "height": d['top'][i+3] + d['height'][i+3] - d['top'][i]})
                 elif pattern_3 is None:
-                    partial.append([d['text'][words[words.index(i) + 1]] + "-" + "NONE" + "-" + d['text'][words[words.index(i) + 3]],
-                                    d['left'][i], d['top'][i], d['left'][i+1] + d['width'][i+1] - d['left'][i], d['top'][i+3] + d['height'][i+3] - d['top'][i]])
+                    partial.append({
+                        "id": d['text'][words[words.index(i) + 1]] + "-" + "NONE" + "-" + d['text'][words[words.index(i) + 3]],
+                        "left":   d['left'][i],
+                        "top": d['top'][i],
+                        "width": d['left'][i+1] + d['width'][i+1] - d['left'][i],
+                        "height": d['top'][i+3] + d['height'][i+3] - d['top'][i]})
                 elif pattern_4 is None:
-                    partial.append([d['text'][words[words.index(i) + 1]] + "-" + d['text'][words[words.index(i) + 2]] + "-" + "NONE",
-                                    d['left'][i], d['top'][i], d['left'][i+1] + d['width'][i+1] - d['left'][i], d['top'][i+2] + d['height'][i+2] - d['top'][i]])
+                    partial.append({
+                        "id": d['text'][words[words.index(i) + 1]] + "-" + d['text'][words[words.index(i) + 2]] + "-" + "NONE",
+                        "left":   d['left'][i],
+                        "top": d['top'][i],
+                        "width": d['left'][i+1] + d['width'][i+1] - d['left'][i],
+                        "height": d['top'][i+2] + d['height'][i+2] - d['top'][i]})
         except IndexError:
             pass
     return json.dumps([complete, partial])
