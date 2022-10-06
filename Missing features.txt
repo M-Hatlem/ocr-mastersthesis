@@ -7,19 +7,14 @@ Gui
 	* DB ADD
 
 Backend
-	* Cassete loaction: north, south, west, east -- just check image height /2 and see if it is in top/bottom haf, then repeat for width and east/west
-	*Have a chekch too see if number is way out of range from the others,  then add to partial list instead of complete
+	* Cassete loaction: north, south, west, east -- just check image height /2 and see if it is in top/bottom haf for north and south, then repeat for width to get east/west
+	* have a chekch too see if casette numbers (id and label) are way out of range from the others, then add to partial list instead of complete
 
-JS 
-	* Clear all functions and reload -- electron function??
+JS  
+	* Clear all functions and reload -- electron function?? Or just move page with a hyperlink to index.html again?????
 	* camera input to backend
-
-
-
-
-if partial list is not empty, cannot push to server
-
-make rect.. if both search box cheks are false...
-open popup bubble, write info with regexp check... reuse earlier code..
-adde to complete list
-add coorinates to a seperate search_box() list with a rezise of 0... 
+	* button to push to server
+		*if partial list is not empty, cannot push to server
+		*visual indicator for when partial list is empty
+	* do not start to draw rect if cliking withn another rect
+	* an undo drawb rect button
