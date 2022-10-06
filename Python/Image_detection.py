@@ -2,9 +2,10 @@ import cv2
 import pytesseract
 import re as re
 import json
-from flask import Flask, send_file
+from flask import Flask
 
 app = Flask(__name__)
+
 
 # Draw a box around each sentence and show the image
 def box(pro_img):
@@ -38,7 +39,7 @@ def box(pro_img):
                     "top": d['top'][i],
                     "width": d['left'][i+1] + d['width'][i+1] - d['left'][i],
                     "height": d['top'][i+2] + d['height'][i+2] - d['top'][i]})
-            elif [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 1: # If only 3 patterns match correctly then the line is partly identified
+            elif [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 1:  # If only 3 patterns match correctly then the line is partly identified
                 if pattern_1 is None:
                     # pattern 1 can be added to complete as hbe is mainly used for coordinates
                     complete.append({
