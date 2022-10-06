@@ -56,7 +56,7 @@ function format_image(image, data_list) {
 function draw_boxes(list, color, context) {
     for (i=0; i< list.length; i++) {
         context.beginPath();
-        context.rect(list[i][1], list[i][2], list[i][3], list[i][4]);
+        context.rect(list[i]["left"], list[i]["top"], list[i]["width"], list[i]["height"]);
         context.shadowColor = "black"
         context.shadowBlur = 20;
         context.lineJoin = "bevel";
@@ -69,11 +69,11 @@ function draw_boxes(list, color, context) {
 // Searches to see if x and y is within a box, then open a casette window
 function search_box(list, x, y, resize) {
     for (i=0; i< list.length; i++) {
-        let text = list[i][0]
-        let left = list[i][1]/resize
-        let top = list[i][2]/resize
-        let width = list[i][3]/resize
-        let height = list[i][4]/resize
+        let text = list[i]["id"]
+        let left = list[i]["left"]/resize
+        let top = list[i]["top"]/resize
+        let width = list[i]["width"]/resize
+        let height = list[i]["height"]/resize
         if (y > top && y < top  + height  && x > left  && x < left  + width ) {
             let popup = document.getElementById("Popup");
             let popup_text = document. getElementsByClassName("popuptext");
@@ -135,15 +135,16 @@ function close_popup() {
 function update_lists(item_update) {
     if (complete.includes(current_elm)) {
         let i = complete.indexOf(current_elm)
-        complete[i][0] = item_update
+        complete[i]["id"] = item_update
         }
     else if (partial.includes(current_elm)) {
         let i = partial.indexOf(current_elm)
         partial.splice(i, 1)
-        current_elm[0] = item_update
+        current_elm["id"] = item_update
         complete.push(current_elm)
         draw_boxes([current_elm], "LawnGreen", context)
         }
+    //Else // if item comes from the custom list...
     let popup = document.getElementById("Popup");
     popup.classList.remove("show")
     }
