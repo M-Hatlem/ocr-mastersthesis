@@ -35,7 +35,7 @@ function format_image(image, data_list) {
         canvas.height = img.height*1.5
         context.drawImage(img, 0, 0, img.width*1.5, img.height*1.5);
         // Rezise canvas to fit screen
-        resizer = 8 // Divide by 8 to resize
+        resizer = 8 // Divide by 8 to resize //TODO update with new camera
         canvas.style.height = canvas.height/resizer + "px"
         // Iterate over the data from the backend, the correctly identified ones
         complete = data_list[0] // fully identified entries
@@ -68,45 +68,59 @@ function format_image(image, data_list) {
                     custom_startX = x * resizer;
                     custom_startY = y * resizer;
                     MouseIsDown = true;
-                    // Create overlay to draw on ??? TODO
+                    // Create overlay to draw on to avoid reseting the canvas
+                    overlay = document.createElement("canvas");
+                    overlay.id = "overlay"
+                    overlay.width = canvas.width
+                    overlay.height = canvas.height
+                    overlay.style.height = canvas.height/resizer + "px"
+                    var doc = document.getElementsByClassName("image")[0];
+                    canvas.style.position = "absolute"
+                    doc.appendChild(overlay)
+                    ovleray_ctx = overlay.getContext("2d")
+                    ovleray_ctx.strokeStyle = "LawnGreen";
+                    ovleray_ctx.lineWidth = 15;
+
+                    // Tracks mouse movement on the overlay if mouse is held down
+                    overlay.addEventListener('mousemove', function (event) {
+                        if (MouseIsDown) {
+                            let x = event.pageX - canvas.offsetLeft;
+                            let y = event.pageY - canvas.offsetTop;
+                            custom_width = (x * resizer) - custom_startX;
+                            custom_height = (y * resizer) - custom_startY;     
+                            ovleray_ctx.clearRect(0, 0, overlay.width, overlay.height);
+                            ovleray_ctx.strokeRect(custom_startX, custom_startY, custom_width, custom_height);
+                        }
+                    });
+
+                    // listen for user letting go of the mouse and draws a square
+                    overlay.addEventListener('mouseup', function () {
+                        if (MouseIsDown) {
+                            MouseIsDown = false;
+                            canvas.style.position = "relative"
+                            document.getElementById("overlay").remove()
+                            custom_box = {
+                                "left": custom_startX,
+                                "top": custom_startY,
+                                "width": custom_width,
+                                "height": custom_height
+                            }
+                            draw_boxes([custom_box], "LawnGreen", context)
+                            let popup = document.getElementById("Popup");
+                            let popup_text = document. getElementsByClassName("popuptext");
+                            popup.style.left = ((custom_startX/resizer) + ((custom_width/resizer)/2) + canvas.offsetLeft) +"px";
+                            popup.style.top = ((custom_startY/resizer) + canvas.offsetTop) + "px";
+                            popup_text[0].value = ""
+                            popup_text[1].value = ""
+                            popup_text[2].value = ""
+                            popup.classList.add("show");
+                        }
+                    });
+
                 } 
             }
         });
 
-        // Tracks mouse movement if mouse is held down
-        canvas.addEventListener('mousemove', function (event) {
-            if (MouseIsDown) {
-                let x = event.pageX - canvas.offsetLeft;
-                let y = event.pageY - canvas.offsetTop;
-                custom_width = (x * resizer) - custom_startX;
-                custom_height = (y * resizer) - custom_startY;     
-                context.clearRect(custom_startX, custom_startY, custom_width, custom_height); //  fix to clear an overlay TODO
-                context.strokeRect(custom_startX, custom_startY, custom_width, custom_height); //   FIX TO DRAW ON AN OVERLAY TODO
-            }
-        });
-
-        // listen for user letting go of the mouse and 
-        canvas.addEventListener('mouseup', function () {
-            if (MouseIsDown) {
-                MouseIsDown = false;
-                // Delete overlay to draw on ??? TODO
-                custom_box = {
-                    "left": custom_startX,
-                    "top": custom_startY,
-                    "width": custom_width,
-                    "height": custom_height
-                }
-                draw_boxes([custom_box], "LawnGreen", context)
-                let popup = document.getElementById("Popup");
-                let popup_text = document. getElementsByClassName("popuptext");
-                popup.style.left = ((custom_startX/resizer) + ((custom_width/resizer)/2) + canvas.offsetLeft) +"px";
-                popup.style.top = ((custom_startY/resizer) + canvas.offsetTop) + "px";
-                popup_text[0].value = ""
-                popup_text[1].value = ""
-                popup_text[2].value = ""
-                popup.classList.add("show");
-            }
-        });
 
         // Remove loading screen and display image once listeners and canvas has finished loading
         document.getElementsByClassName('loading')[0].style.display = 'none';

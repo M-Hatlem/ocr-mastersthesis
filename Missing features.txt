@@ -16,5 +16,4 @@ JS
 	* button to push to server
 		*if partial list is not empty, cannot push to server
 		*visual indicator for when partial list is empty
-	* do not start to draw rect if cliking withn another rect
 	* an undo drawb rect button
