@@ -47,14 +47,14 @@ def box(pro_img):
                         "left": d['left'][i+1],
                         "top": d['top'][i+1],
                         "width": d['width'][i+1],
-                        "height": d['height'][i+1]})
+                        "height": d['height'][i+1] * 2})
                 elif pattern_2 is None:
                     partial.append({
                         "id": "NONE" + "-" + d['text'][words[words.index(i) + 2]] + "-" + d['text'][words[words.index(i) + 3]],
                         "left":   d['left'][i],
                         "top": d['top'][i],
-                        "width": d['left'][i+3] + d['width'][i+3] - d['left'][i],
-                        "height": d['top'][i+3] + d['height'][i+3] - d['top'][i]})
+                        "width": d['left'][i+2] + d['width'][i+2] - d['left'][i],
+                        "height": d['top'][i+2] + d['height'][i+2] - d['top'][i]})
                 elif pattern_3 is None:
                     partial.append({
                         "id": d['text'][words[words.index(i) + 1]] + "-" + "NONE" + "-" + d['text'][words[words.index(i) + 3]],
