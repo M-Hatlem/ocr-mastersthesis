@@ -27,9 +27,9 @@ def box(pro_img):
         try:
             # Looks at each word and the five next words to see if it matches the pattern
             pattern_1 = re.match(r"HBE", d['text'][i])
-            pattern_2 = re.match(r"\d{5}", d['text'][words[words.index(i)+1]])
-            pattern_3 = re.match(r"\d{3}", d['text'][words[words.index(i)+2]])
-            pattern_4 = re.match(r"[O|B|C]\d{2}$", d['text'][words[words.index(i)+3]])
+            pattern_2 = re.match(r"^\d{5}$", d['text'][words[words.index(i)+1]])
+            pattern_3 = re.match(r"^\d{3}$", d['text'][words[words.index(i)+2]])
+            pattern_4 = re.match(r"^[O|B|C]\d{2}$", d['text'][words[words.index(i)+3]])
             if [pattern_1, pattern_2, pattern_3, pattern_4].count(None) == 0: # If all patterns match correctly then the line is identified
                 # patters is listed as [STRING WITH CODE, LEFT, TOP, WIDTH, HEIGHT] Width and Height are addtionally calulated to include the length of the entire casette
                 # top and left is pixel coordinates. Width and height is the legnth of the words in pixels
