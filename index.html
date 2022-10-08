@@ -22,11 +22,13 @@
           <input class="popuptext"  id="Popup_text_1">
           <input class="popuptext"  id="Popup_text_2">
           <input class="popuptext"  id="Popup_text_3">
-          <button class="close" onclick="close_popup()">X</button>
+          <button id="close" onclick="close_popup()">X</button>
+          <button id="remove_rect" onclick="remove_rect()">Undo</button>
         </div>
         <canvas id="canvas"></canvas>
+        <canvas id="overlay"></canvas>
+        <button id="submit">Submit</button>
     </div>
-
   </body>
   <script src="./functions.js"></script>
 </html>

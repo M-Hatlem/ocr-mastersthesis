@@ -11,9 +11,5 @@ Backend
 	* have a chekch too see if casette numbers (id and label) are way out of range from the others, then add to partial list instead of complete
 
 JS  
-	* Clear all functions and reload -- electron function?? Or just move page with a hyperlink to index.html again?????
 	* camera input to backend
-	* button to push to server
-		*if partial list is not empty, cannot push to server
-		*visual indicator for when partial list is empty
-	* an undo drawb rect button
+	* push to server/ submit function

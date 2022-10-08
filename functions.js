@@ -54,9 +54,33 @@ function format_image(image, data_list) {
             search_box(complete, x, y, resizer)
             search_box(partial, x, y, resizer)
         });
-        
+
+    //initialize overlay
+    init_overlay()
+    
+    // Remove loading screen and display image once listeners and canvas has finished loading
+    document.getElementsByClassName('loading')[0].style.display = 'none';
+    document.getElementById('canvas').style.display = 'inline';
+    document.getElementById('canvas').style.display = 'inline';
+    document.getElementById("submit").style.display = "inline"
+    check_partial(partial)
+    }
+}
+
+// Sets up the overlay for custom user drawings
+function init_overlay() {
         // listen for mouse held down
         var MouseIsDown = false;
+
+        // Create overlay to draw on to avoid reseting the canvas
+        overlay = document.getElementById("overlay");
+        overlay.width = canvas.width
+        overlay.height = canvas.height
+        overlay.style.height = canvas.height/resizer + "px" 
+        ovleray_ctx = overlay.getContext("2d")
+        ovleray_ctx.strokeStyle = "LawnGreen";
+        ovleray_ctx.lineWidth = 15;
+
         canvas.addEventListener('mousedown', function (event) {
             // if you are not clicking a popup box
             let x = event.pageX - canvas.offsetLeft;
@@ -67,66 +91,56 @@ function format_image(image, data_list) {
                 if (popup.classList[1] != "show") {
                     custom_startX = x * resizer;
                     custom_startY = y * resizer;
+                    custom_height = 0
+                    custom_width = 0
+                    current_elm = ""
                     MouseIsDown = true;
-                    // Create overlay to draw on to avoid reseting the canvas
-                    overlay = document.createElement("canvas");
-                    overlay.id = "overlay"
-                    overlay.width = canvas.width
-                    overlay.height = canvas.height
-                    overlay.style.height = canvas.height/resizer + "px"
-                    var doc = document.getElementsByClassName("image")[0];
                     canvas.style.position = "absolute"
-                    doc.appendChild(overlay)
-                    ovleray_ctx = overlay.getContext("2d")
-                    ovleray_ctx.strokeStyle = "LawnGreen";
-                    ovleray_ctx.lineWidth = 15;
-
-                    // Tracks mouse movement on the overlay if mouse is held down
-                    overlay.addEventListener('mousemove', function (event) {
-                        if (MouseIsDown) {
-                            let x = event.pageX - canvas.offsetLeft;
-                            let y = event.pageY - canvas.offsetTop;
-                            custom_width = (x * resizer) - custom_startX;
-                            custom_height = (y * resizer) - custom_startY;     
-                            ovleray_ctx.clearRect(0, 0, overlay.width, overlay.height);
-                            ovleray_ctx.strokeRect(custom_startX, custom_startY, custom_width, custom_height);
-                        }
-                    });
-
-                    // listen for user letting go of the mouse and draws a square
-                    overlay.addEventListener('mouseup', function () {
-                        if (MouseIsDown) {
-                            MouseIsDown = false;
-                            canvas.style.position = "relative"
-                            document.getElementById("overlay").remove()
-                            custom_box = {
-                                "left": custom_startX,
-                                "top": custom_startY,
-                                "width": custom_width,
-                                "height": custom_height
-                            }
-                            draw_boxes([custom_box], "LawnGreen", context)
-                            let popup = document.getElementById("Popup");
-                            let popup_text = document. getElementsByClassName("popuptext");
-                            popup.style.left = ((custom_startX/resizer) + ((custom_width/resizer)/2) + canvas.offsetLeft) +"px";
-                            popup.style.top = ((custom_startY/resizer) + canvas.offsetTop) + "px";
-                            popup_text[0].value = ""
-                            popup_text[1].value = ""
-                            popup_text[2].value = ""
-                            popup.classList.add("show");
-                        }
-                    });
-
+                    overlay.style.display = "inline"
                 } 
             }
         });
 
+        // Tracks mouse movement on the overlay if mouse is held down
+        overlay.addEventListener('mousemove', function (event) {
+            if (MouseIsDown) {
+                let x = event.pageX - canvas.offsetLeft;
+                let y = event.pageY - canvas.offsetTop;
+                custom_width = (x * resizer) - custom_startX;
+                custom_height = (y * resizer) - custom_startY;     
+                ovleray_ctx.clearRect(0, 0, overlay.width, overlay.height);
+                ovleray_ctx.strokeRect(custom_startX, custom_startY, custom_width, custom_height);
+                }
+            });
 
-        // Remove loading screen and display image once listeners and canvas has finished loading
-        document.getElementsByClassName('loading')[0].style.display = 'none';
-        document.getElementById('canvas').style.display = 'inline';
+        // listen for user letting go of the mouse and draws a square
+        overlay.addEventListener('mouseup', function () {
+            if (custom_height == 0 && custom_width == 0) {
+                MouseIsDown = false
+                canvas.style.position = "relative"
+                overlay.style.display = "none"
+            }
+            if (MouseIsDown) {
+                MouseIsDown = false;
+                custom_box = {
+                    "left": custom_startX,
+                    "top": custom_startY,
+                    "width": custom_width,
+                    "height": custom_height
+                }
+                let popup = document.getElementById("Popup");
+                let popup_text = document. getElementsByClassName("popuptext");
+                popup.style.left = ((custom_startX/resizer) + ((custom_width/resizer)/2) + canvas.offsetLeft) +"px";
+                popup.style.top = ((custom_startY/resizer) + canvas.offsetTop) + "px";
+                popup_text[0].value = ""
+                popup_text[1].value = ""
+                popup_text[2].value = ""
+                popup.classList.add("show");
+                let undo = document.getElementById("remove_rect")
+                undo.style.display = "inline"
+            }
+        });
     }
-}
 
 // Used to draw boxes from the partial and complete lists from backend
 function draw_boxes(list, color, context) {
@@ -194,7 +208,6 @@ function close_popup() {
     }
 }
 
-
 // Update complete and partial lists with selected elements
 function update_lists(item_update) {
     if (complete.includes(current_elm)) {
@@ -207,15 +220,34 @@ function update_lists(item_update) {
         current_elm["id"] = item_update
         complete.push(current_elm)
         draw_boxes([current_elm], "LawnGreen", context)
+        check_partial(partial)
         }
     else {
+        draw_boxes([custom_box], "LawnGreen", context)
         custom_box["id"] = item_update
         complete.push(custom_box)
+        let undo = document.getElementById("remove_rect")
+        undo.style.display = "none"
+        canvas.style.position = "relative"
+        overlay.style.display = "none"
     }
     let popup = document.getElementById("Popup");
     popup.classList.remove("show")
 }
 
+// Removes a rectangle 
+function remove_rect(){
+    let popup = document.getElementById("Popup");
+    popup.classList.remove("show")
+    let undo = document.getElementById("remove_rect")
+    undo.style.display = "none"
+    canvas.style.position = "relative"
+    overlay.style.display = "none"
+    let popup_text = document. getElementsByClassName("popuptext");
+    popup_text[0].style.borderColor = "dimgrey";
+    popup_text[1].style.borderColor = "dimgrey";
+    popup_text[2].style.borderColor = "dimgrey";
+}
 
 // loading screen
 function start_loading() {
@@ -223,5 +255,19 @@ function start_loading() {
     document.getElementsByClassName('loading')[0].style.display = 'table';
 }
 
+
+function check_partial(partial) {
+    if (partial.length == 0) {
+    document.getElementById("submit").style.backgroundColor = "rgb(22, 158, 221)"
+    document.getElementById("submit").onclick = function() { submit(); }
+    }
+}
+
+//submits the results and restarts the page
+function submit() {
+//TODO: CALCULATE North/South/East/West
+//TODO: PUSH COMPLETE LIST TO DATABASE
+window.open("index.html","_self")
+}
 
 
