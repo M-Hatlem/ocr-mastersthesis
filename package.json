@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/M-Hatlem/ocr-master#readme",
   "dependencies": {
-    "electron": "^20.1.4",
+    "electron": "^20.3.1",
     "node-fetch": "^3.2.10"
   }
 }

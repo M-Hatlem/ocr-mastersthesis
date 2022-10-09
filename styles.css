@@ -4,6 +4,22 @@
     text-align: center;
 }
 
+#webcam {
+  height: "720" ;
+}
+
+#take_img_btn{
+  display: none;
+  border-radius: 50%;
+  border: black;
+  background-color: rgb(22, 158, 221);
+  height: 50px;
+  width: 50px;
+  position: absolute;
+  margin-top: -270px;
+  margin-left: 20px;
+}
+
 .loading {
     margin: auto;
     width: 50%;

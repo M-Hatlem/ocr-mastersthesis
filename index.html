@@ -6,10 +6,12 @@
     <title>OCR Tool</title>
   </head>
     <body>
-
       <div class="page-1">
-        <h1>Image HERE</h1>
-        <!-- <button type="button" id="Take_img_btn"onclick="take_image()">Take Image</button> -->
+        <div id="camera">
+          <video id="webcam" autoplay playsinline poster="assets/Loading_icon.gif">Camera not available</video>
+          <button type="button" id="take_img_btn"onclick="take_image()">Take photo</button>
+        </div>
+        <span>Upload Image: </span>
         <input type="file" id="image-input" accept="image/jpeg, image/png, image/jpg" onchange="upload_image()">
     </div>
 

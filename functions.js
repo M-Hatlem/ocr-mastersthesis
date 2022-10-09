@@ -1,4 +1,27 @@
 // This file contains the fucnctions called when running the application
+f = 124
+
+// Starts camera feed
+function start_camera(){
+    video = document.getElementById('webcam');
+    take_image_btn = document.getElementById('take_img_btn')
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then((stream) => {
+        video.srcObject = stream;
+        video.play();
+        take_image_btn.style.display = "inherit"
+        let mediaStreamTrack = stream.getVideoTracks()[0];
+        imageCapture = new ImageCapture(mediaStreamTrack);
+    })
+    .catch((err) => {
+      console.error(`An error occurred: ${err}`);
+    });
+}
+
+// stops camera
+function stop_camera() {
+    video.pause()
+}
 
 // passes the image to the backend
 function process_image(image) {
@@ -17,11 +40,13 @@ function upload_image() {
 
 // Takes a photo
 function take_image() {
-    //Save image or overwrite old image 
-    //get image_path
-    start_loading()
-    process_image(//*image_path*// 
-    )
+    imageCapture.takePhoto()
+    .then(blob => {
+        let image_url = window.URL.createObjectURL(blob);
+        //TODO Save image
+    })
+    //start_loading()
+    //process_image("temp/temp.png")
 }
 
 // Formating the image with the data from the backend to highlight the detected casettes and sets up the canvas
@@ -60,7 +85,6 @@ function format_image(image, data_list) {
     
     // Remove loading screen and display image once listeners and canvas has finished loading
     document.getElementsByClassName('loading')[0].style.display = 'none';
-    document.getElementById('canvas').style.display = 'inline';
     document.getElementById('canvas').style.display = 'inline';
     document.getElementById("submit").style.display = "inline"
     check_partial(partial)
@@ -251,6 +275,7 @@ function remove_rect(){
 
 // loading screen
 function start_loading() {
+    stop_camera()
     document.getElementsByClassName('page-1')[0].style.display = 'none';
     document.getElementsByClassName('loading')[0].style.display = 'table';
 }
@@ -265,9 +290,12 @@ function check_partial(partial) {
 
 //submits the results and restarts the page
 function submit() {
-//TODO: CALCULATE North/South/East/West
+//TODO: CALCULATE North/South/East/West of each casette in completed list
 //TODO: PUSH COMPLETE LIST TO DATABASE
 window.open("index.html","_self")
 }
 
-
+// This is the window onload function, it starts scripts that launch when the page is opened
+window.onload = function() {
+    start_camera()
+}
