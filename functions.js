@@ -1,5 +1,5 @@
 // This file contains the fucnctions called when running the application
-f = 124
+const { ipcRenderer } = require("electron")
 
 // Starts camera feed
 function start_camera(){
@@ -42,12 +42,28 @@ function upload_image() {
 function take_image() {
     imageCapture.takePhoto()
     .then(blob => {
-        let image_url = window.URL.createObjectURL(blob);
-        //TODO Save image
+        saveBlob(blob)
     })
-    //start_loading()
-    //process_image("temp/temp.png")
+    ipcRenderer.on("SAVED_FILE", (event, path) => {
+        start_loading()
+        process_image({"path":"./temp/temp.png"})
+    })
 }
+
+
+//Saves a blob as a photo
+function saveBlob(blob) {
+    let reader = new FileReader()
+    reader.onload = function() {
+        if (reader.readyState == 2) {
+            var buffer = new Buffer.from(reader.result)
+            ipcRenderer.send("SAVE_FILE", "./temp/temp.png", buffer)
+        }
+    }
+    reader.readAsArrayBuffer(blob)
+}
+
+
 
 // Formating the image with the data from the backend to highlight the detected casettes and sets up the canvas
 function format_image(image, data_list) {

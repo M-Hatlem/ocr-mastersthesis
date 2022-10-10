@@ -1,9 +1,9 @@
 // This file contains the required code to run the Electrong GUI and the python backend
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
-const fs = require('fs')
+const fsExtra = require('fs-extra')
 
 const createWindow = () => {
   // Create the browser window.
@@ -12,6 +12,8 @@ const createWindow = () => {
     height: 1000,
     webPreferences: {
       //Load preload scripts
+      nodeIntegration: true,
+      contextIsolation: false,
       //preload: path.join(__dirname, 'functions.js')
     }
   
@@ -76,13 +78,17 @@ app.on('window-all-closed', () => {
 //Kills the python backend on applicaton exit
 app.on('will-quit', exitPy)
 
-, ipcMain
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
 
-// Function to save a blob to an image in temp
-async function saveBlobToFile(blob) {
-  let fileData = new Int8Array(await blob.arrayBuffer());
-  fs.writeFileSync("temp/temp.png", fileData);
-}
+// This code is used to save a file, mainy a temporary image in the temp folder
+ipcMain.on("SAVE_FILE", (event, path, buffer) => {
+  fsExtra.outputFile(path, buffer, err => {
+    if (err) {
+        event.sender.send("ERROR", err.message)
+    } else {
+        event.sender.send("SAVED_FILE", path)
+    }
+  })
+})
