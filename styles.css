@@ -30,7 +30,6 @@
 
 .image {
     margin: auto;
-    width: 50%;
     text-align: center;
 }
 
@@ -42,6 +41,9 @@
     display: none;
     position: relative;
    /* height: 800px; */
+   margin-right: auto;
+   margin-left: auto;
+   width: auto;
 }
 
   .popup_div {

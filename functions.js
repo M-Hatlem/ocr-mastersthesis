@@ -41,7 +41,6 @@ function process_image(image) {
 function upload_image() {
     const uploadFile = document.getElementById("image-input").files[0]
     start_loading()
-    resizer = 8 // Divide by 8 to resize //TODO update with new camera in format image function and remove from here
     process_image(uploadFile)
 }
 
@@ -53,7 +52,6 @@ function take_image() {
     })
     ipcRenderer.on("SAVED_FILE", (event, path) => {
         start_loading()
-        resizer = 3 // Divide by 8 to resize //TODO update with new camera in format image function and remove from here
         process_image({"path":"./temp/temp.png"})
     })
 }
@@ -84,7 +82,7 @@ function format_image(image, data_list) {
         canvas.height = img.height*1.5
         context.drawImage(img, 0, 0, img.width*1.5, img.height*1.5);
         // Rezise canvas to fit screen
-        //resizer = 8 // Divide by 8 to resize //TODO update with new camera
+        resizer = Math.floor(canvas.height/800) + 1 // Divide by  to resize // TODO Format for new camera
         canvas.style.height = canvas.height/resizer + "px"
         // Iterate over the data from the backend, the correctly identified ones
         complete = data_list[0] // fully identified entries
