@@ -5,7 +5,8 @@
 }
 
 #webcam {
-  height: "720" ;
+  height: 480px;
+  width: 640px;
 }
 
 #take_img_btn{

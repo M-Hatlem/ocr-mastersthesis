@@ -10,6 +10,7 @@ Backend
 	* have a chekch too see if casette numbers (id and label) are way out of range from the others, then add to partial list instead of complete
 
 JS  
-	* camera input to backend
+	* camera choose highest resolution
 	* push to server/ submit function
 	* Cassete loaction: north, south, west, east -- just check image height /2 and see if it is in top/bottom haf for north and south, then repeat for width to get east/west
+
