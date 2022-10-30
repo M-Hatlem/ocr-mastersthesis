@@ -4,13 +4,14 @@ Database
 
 Gui
 	* DB SEARCH
-	* DB ADD
 
 Backend
-	* have a chekch too see if casette numbers (id and label) are way out of range from the others, then add to partial list instead of complete
+	* (Optional) Have a chekch too see if casette numbers (id and label) are way out of range from the others, then add to partial list instead of complete
 
 JS  
-	* camera choose highest resolution
-	* push to server/ submit function
-	* Cassete loaction: north, south, west, east -- just check image height /2 and see if it is in top/bottom haf for north and south, then repeat for width to get east/west
+	* push to databse/ submit function:
+		* Cassette loaction on tray: north, south, west, east -- just check image height /2 and see if it is in top/bottom haf for north and south, then repeat 		for width to get east/west
+		* Cassette location in lab dropdown menu before submitting: eg. Cutting, Waxing, slicing, archive etc..
+			* if in archive: storage ID / location
+		* calculate time and add
 
