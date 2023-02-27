@@ -89,7 +89,9 @@ function format_image(image, data_list) {
         draw_boxes(complete, "LawnGreen", context)
         // Iterate over the data from the backend, the partially identified ones
         partial = data_list[1] // partially identified entries
-        draw_boxes(partial, "orange", context)
+        draw_boxes(partial, "yellow", context)
+        //adds sidebar
+        update_sidebar(complete, partial)
         // sets up for cusom drawn boxes
         current_elm = ""
         cusomt_box = ""
@@ -108,7 +110,7 @@ function format_image(image, data_list) {
     // Remove loading screen and display image once listeners and canvas has finished loading
     document.getElementsByClassName('loading')[0].style.display = 'none';
     document.getElementById('canvas').style.display = 'inline';
-    document.getElementById("submit").style.display = "inline"
+    document.getElementsByClassName('image')[0].style.display = 'block';
     check_partial(partial)
     }
 }
@@ -251,7 +253,9 @@ function close_popup() {
     if (correct == 3) {
         item_update = popup_text[0].value + "-" + popup_text[1].value + "-" + popup_text[2].value
         update_lists(item_update)
+        return true
     }
+    return false
 }
 
 // Update complete and partial lists with selected elements
@@ -279,6 +283,7 @@ function update_lists(item_update) {
     }
     let popup = document.getElementById("Popup");
     popup.classList.remove("show")
+    update_sidebar(complete, partial)
 }
 
 // Removes a rectangle 
@@ -302,7 +307,7 @@ function start_loading() {
     document.getElementsByClassName('loading')[0].style.display = 'table';
 }
 
-
+//Checks if partial list is empty
 function check_partial(partial) {
     if (partial.length == 0) {
     document.getElementById("submit").style.backgroundColor = "rgb(22, 158, 221)"
@@ -321,3 +326,65 @@ window.open("index.html","_self")
 window.onload = function() {
     start_camera()
 }
+
+
+//Updates the display of complete and partial cassettes
+function update_sidebar(complete, partial) {
+    // Retritve and empty lists
+    let doc_complete = document.getElementById("complete")
+    let doc_partial =  document.getElementById("partial")
+    doc_complete.innerHTML = ""
+    doc_partial.innerHTML = ""
+    let docs = [doc_complete, doc_partial]
+    let lists = [complete, partial]
+    for (i=0; i < 2; i++) {
+        //sort the lists
+        let sorted = lists[i].sort(function(a, b) {
+            a.id = a.id.toUpperCase()
+            b.id = b.id.toUpperCase()
+            return (a.id < b.id) ? -1 : (a.id > b.id) ? 1 : 0;
+        })
+        //Add list Id's to display
+        for (j=0; j < sorted.length; j++) {
+            let li = (document.createElement("li"))
+            let id = sorted[j]["id"]
+            li.appendChild(document.createTextNode(id))
+            li.onclick = function() {set_and_higlight(id)}
+            docs[i].appendChild(li)
+        }
+    }
+}
+
+
+// Highligts all cassettes that fulfuill search requiremnts
+function highlight_cassette(complete, partial) {
+    clear_search(complete, partial)
+    let search_input = document.getElementById("search_inp").value
+    search_input = search_input.replace(/ /g,"-");
+    let found = []
+    for (i=0; i < complete.length; i++) {
+        if (complete[i]["id"].includes(search_input.toUpperCase())) {
+            found.push(complete[i])
+        }
+    }
+    for (i=0; i < partial.length; i++) {
+        if (partial[i]["id"].includes(search_input.toUpperCase())) {
+            found.push(partial[i])
+        }  
+    }
+    draw_boxes(found, "OrangeRed", context)
+}
+
+//Clears away the search boxes
+function clear_search(complete, partial) {
+    draw_boxes(complete, "LawnGreen", context)
+    draw_boxes(partial, "yellow", context)
+}
+
+
+// Sets the search value and searches
+function set_and_higlight(search_term) {
+    document.getElementById("search_inp").value = search_term
+    highlight_cassette(complete, partial)
+}
+

@@ -13,13 +13,12 @@
         </div>
         <span>Upload Image: </span>
         <input type="file" id="image-input" accept="image/jpeg, image/png, image/jpg" onchange="upload_image()">
-    </div>
-
-    <div class="loading">
-      <img src="assets/Loading_icon.gif" alt="Loading icon" load_ico.id="load-ico">
-      <p id="load-txt">LOADING...</p>
-    </div>
-    <div class="image">
+      </div>
+      <div class="loading">
+        <img src="assets/Loading_icon.gif" alt="Loading icon" load_ico.id="load-ico">
+        <p id="load-txt">LOADING...</p>
+      </div>
+      <div class="image">
         <div class="popup_div" id="Popup">
           <input class="popuptext"  id="Popup_text_1">
           <input class="popuptext"  id="Popup_text_2">
@@ -29,10 +28,28 @@
         </div>
         <canvas id="canvas"></canvas>
         <canvas id="overlay"></canvas>
-        <div>
+        <div class="sidebar">
+          <div id="overlay-complete">
+            <h1>Found cassettes</h1>
+            <ol id="complete"></ol>
+          </div>
+          <div id="overlay-partial">
+            <h1>Partially recognized</h1>
+            <ol id="partial"></ol>
+          </div>
+        </div>
+        <div class="search">
+          <div class="innerSearch">
+            <h2>Search</h2>
+            <input id="search_inp" placeholder="ID-CASE-Type+year">
+            <button onclick="highlight_cassette(complete, partial)"  id="Search_btn">Search</button>
+            <button onclick="clear_search(complete, partial)"  id="Clear_btn">Clear Searches</button>
+          </div>
+        </div>
+        <div id="subDiv">
           <button id="submit">Submit</button>
         </div>
-    </div>
-  </body>
+      </div>
+    </body>
   <script src="./functions.js"></script>
 </html>
