@@ -24,16 +24,17 @@
           <input class="popuptext"  id="Popup_text_2">
           <input class="popuptext"  id="Popup_text_3">
           <button id="close" onclick="close_popup()">X</button>
-          <button id="remove_rect" onclick="remove_rect()">Undo</button>
+          <button class="remove_rect" id="remove_temp_rect" onclick="remove_temp_rect()">Delete</button>
+          <button class="remove_rect" id="remove_perm_rect" onclick="remove_perm_rect()">Delete</button>
         </div>
         <canvas id="canvas"></canvas>
         <canvas id="overlay"></canvas>
         <div class="sidebar">
-          <div id="overlay-complete">
+          <div id="sidebar-complete">
             <h1>Found cassettes</h1>
             <ol id="complete"></ol>
           </div>
-          <div id="overlay-partial">
+          <div id="sidebar-partial">
             <h1>Partially recognized</h1>
             <ol id="partial"></ol>
           </div>
@@ -41,12 +42,18 @@
         <div class="search">
           <div class="innerSearch">
             <h2>Search</h2>
-            <input id="search_inp" placeholder="ID-CASE-Type+year">
+            <input id="search_inp" placeholder="CASE-SAMPLE-ID-Type+year">
             <button onclick="highlight_cassette(complete, partial)"  id="Search_btn">Search</button>
-            <button onclick="clear_search(complete, partial)"  id="Clear_btn">Clear Searches</button>
+            <button onclick="redraw_canvas()"  id="Clear_btn">Clear Searches</button>
           </div>
         </div>
         <div id="subDiv">
+          <select id="status">
+            <option value="processing">Processing</option>
+            <option value="embedding">Embedding</option>
+            <option value="sectioning">Sectioning</option>
+            <option value="Archiveing">Archiveing</option>
+            </select>
           <button id="submit">Submit</button>
         </div>
       </div>

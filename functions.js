@@ -1,5 +1,8 @@
 // This file contains the fucnctions called when running the application
+
+//Library import from node
 const { ipcRenderer } = require("electron")
+const fs = require('fs');
 
 // Starts camera feed
 function start_camera(){
@@ -75,12 +78,13 @@ function saveBlob(blob) {
 function format_image(image, data_list) {
     let canvas = document.getElementById('canvas');
     context = canvas.getContext('2d');
-    let img = document.createElement("img");
+    img = document.createElement("img");
     img.src = String(image["path"])
     img.onload = function(){
-        canvas.width = img.width*1.5
-        canvas.height = img.height*1.5
-        context.drawImage(img, 0, 0, img.width*1.5, img.height*1.5);
+        image_upscale = 1.5 // this is upscaler set in the python bakcend
+        canvas.width = img.width*image_upscale
+        canvas.height = img.height*image_upscale
+        context.drawImage(img, 0, 0, img.width*image_upscale, img.height*image_upscale);
         // Rezise canvas to fit screen
         resizer = Math.floor(canvas.height/800) + 1 // Divide by  to resize // TODO Format for new camera
         canvas.style.height = canvas.height/resizer + "px"
@@ -94,7 +98,7 @@ function format_image(image, data_list) {
         update_sidebar(complete, partial)
         // sets up for cusom drawn boxes
         current_elm = ""
-        cusomt_box = ""
+        custom_box = ""
 
         //add the ability to click on the rectang
         canvas.addEventListener('click', function (event) {
@@ -184,7 +188,7 @@ function init_overlay() {
                 popup_text[1].value = ""
                 popup_text[2].value = ""
                 popup.classList.add("show");
-                let undo = document.getElementById("remove_rect")
+                let undo = document.getElementById("remove_temp_rect")
                 undo.style.display = "inline"
             }
         });
@@ -276,7 +280,7 @@ function update_lists(item_update) {
         draw_boxes([custom_box], "LawnGreen", context)
         custom_box["id"] = item_update
         complete.push(custom_box)
-        let undo = document.getElementById("remove_rect")
+        let undo = document.getElementById("remove_temp_rect")
         undo.style.display = "none"
         canvas.style.position = "relative"
         overlay.style.display = "none"
@@ -286,11 +290,11 @@ function update_lists(item_update) {
     update_sidebar(complete, partial)
 }
 
-// Removes a rectangle 
-function remove_rect(){
+// Removes a temporary drawn rectangle 
+function remove_temp_rect(){
     let popup = document.getElementById("Popup");
     popup.classList.remove("show")
-    let undo = document.getElementById("remove_rect")
+    let undo = document.getElementById("remove_temp_rect")
     undo.style.display = "none"
     canvas.style.position = "relative"
     overlay.style.display = "none"
@@ -298,6 +302,29 @@ function remove_rect(){
     popup_text[0].style.borderColor = "dimgrey";
     popup_text[1].style.borderColor = "dimgrey";
     popup_text[2].style.borderColor = "dimgrey";
+    ovleray_ctx.clearRect(0, 0, overlay.width, overlay.height);
+}
+
+
+// Removes a permantn rectangle //TODO FINISH 
+function remove_perm_rect() {
+    let popup = document.getElementById("Popup");
+    popup.classList.remove("show")
+    let popup_text = document. getElementsByClassName("popuptext");
+    popup_text[0].style.borderColor = "dimgrey";
+    popup_text[1].style.borderColor = "dimgrey";
+    popup_text[2].style.borderColor = "dimgrey";
+    // REMOVE POPUP ITEM FROM COMPLETE OR PARTIAL
+    redraw_canvas()
+    update_sidebar(complete, partial)
+}
+
+
+//redrawn canvas
+function redraw_canvas() {
+    context.drawImage(img, 0, 0, img.width*image_upscale, img.height*image_upscale);
+    draw_boxes(complete, "LawnGreen", context)
+    draw_boxes(partial, "yellow", context)
 }
 
 // loading screen
@@ -317,9 +344,9 @@ function check_partial(partial) {
 
 //submits the results and restarts the page
 function submit() {
-//TODO: CALCULATE North/South/East/West of each casette in completed list
-//TODO: PUSH COMPLETE LIST TO DATABASE
-window.open("index.html","_self")
+    write_to_file(complete)
+    //TODO: Should idealy push complete list to database instead of writing to file
+    window.open("index.html","_self")
 }
 
 // This is the window onload function, it starts scripts that launch when the page is opened
@@ -358,7 +385,7 @@ function update_sidebar(complete, partial) {
 
 // Highligts all cassettes that fulfuill search requiremnts
 function highlight_cassette(complete, partial) {
-    clear_search(complete, partial)
+    redraw_canvas()
     let search_input = document.getElementById("search_inp").value
     search_input = search_input.replace(/ /g,"-");
     let found = []
@@ -375,16 +402,66 @@ function highlight_cassette(complete, partial) {
     draw_boxes(found, "OrangeRed", context)
 }
 
-//Clears away the search boxes
-function clear_search(complete, partial) {
-    draw_boxes(complete, "LawnGreen", context)
-    draw_boxes(partial, "yellow", context)
-}
-
 
 // Sets the search value and searches
 function set_and_higlight(search_term) {
     document.getElementById("search_inp").value = search_term
     highlight_cassette(complete, partial)
+}
+
+
+//Divides image into a 3x3 grid and returns which part the cassette is located in
+function get_grid_location(cassette) {
+    let location = ""
+    //Finds it it's north or south by seeing if it's smaller or larger than 1 or 2 thirds of the image height
+    if ((cassette["top"] + (cassette["height"]/2)) <=  (img.height*image_upscale)/3) {
+        location =  "North"
+    } else if ((cassette["top"] + (cassette["height"]/2)) >= (((img.height*image_upscale)/3)*2)) {
+        location =  "South"
+    }
+    //Finds it it's west or east by seeing if it's smaller or larger than 1 or 2 thirds of image width
+    if ((cassette["left"] + (cassette["width"]/2)) <=  (img.width*image_upscale)/3) {
+        location = location + "West"
+    } else if ((cassette["left"] + (cassette["width"]/2)) >= (((img.width*image_upscale)/3)*2)) {
+        location = location + "East"
+    }
+    //If location is empty cassette is in the middle
+    if (location.length == 0) {
+        location =  "Middle"
+    }
+    return location
+}
+
+
+//Temproary way of storing and oupting data whilst waiting for DataBase to be establihed
+function write_to_file(complete) {
+    for (i=0; i < complete.length; i++) {
+        let unique_key = complete[i]["id"]
+        let [id_case, sample_id, sample_type] = unique_key.split("-")
+        let image_location = get_grid_location(complete[i])
+        let status =  document.getElementById("status").value
+        let date = new Date()
+        let local_time = date.toLocaleTimeString()
+        let local_date = date.toISOString().split('T')[0];
+        let ISO_timestamp = date.toISOString()
+        //Writes down: Uniqe key, case id, sample id, type, cassette locationn in image, time, date(YY-MM-DD), ISO timestamp, staus
+        let output = {
+            "unique_key" : unique_key,
+            "case _id" : id_case,
+            "sample_id" : sample_id,
+            "sample_type" : sample_type,
+            "image_location" : image_location,
+            "local_time" : local_time,
+            "local_date" : local_date,
+            "iso_timestamp" : ISO_timestamp,
+            "stauts" : status
+        }
+        JSON_output = JSON.stringify(output) + "\n"
+        fs.appendFile('./Output/OutputData.JSON', JSON_output, err => {
+            if (err) {
+              console.error(err);
+            }
+        });
+    }
 }
 

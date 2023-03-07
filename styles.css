@@ -14,18 +14,19 @@ h1 {
 }
 
 #subDiv {
-  margin-top: -110px;
+  display: inline-grid;
+  margin-top: 10px;
 }
 
 
-#overlay-complete{
+#sidebar-complete{
   margin-top: 40px;
   margin-left: 50px;
   border-style: solid;
   border-color: lawngreen;
 }
 
-#overlay-partial{
+#sidebar-partial{
   margin-top: 40px;
   margin-left: 50px;
   border-style: solid;
@@ -128,7 +129,7 @@ h1 {
     padding: initial;
   }
   
-  #remove_rect{
+  .remove_rect{
     color: white;
     background-color: #0926ff;
     text-align: center;
@@ -219,4 +220,5 @@ h1 {
   position: relative;
   left: -450px;
   top: -800px;
+  block-size: 0px;
 }
