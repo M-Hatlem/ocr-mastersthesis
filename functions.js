@@ -352,16 +352,25 @@ function start_loading() {
 //Checks if partial list is empty
 function check_partial(partial) {
     if (partial.length == 0) {
-    document.getElementById("submit").style.backgroundColor = "rgb(22, 158, 221)"
-    document.getElementById("submit").onclick = function() { submit(); }
+        let status =  document.getElementById("status").value
+        let archive_location =  document.getElementById("archive_location").value
+        if (status == "Archiveing" && archive_location == "") {
+            document.getElementById("submit").style.backgroundColor = "rgb(10, 73, 102)"
+            document.getElementById("submit").onclick = function() {} 
+            return false
+        }
+        document.getElementById("submit").style.backgroundColor = "rgb(22, 158, 221)"
+        document.getElementById("submit").onclick = function() { submit(); } 
+        return true
     }
+    return false
 }
 
 //submits the results and restarts the page
 function submit() {
     write_to_file(complete)
     //TODO: Should idealy push complete list to database instead of writing to file
-    window.open("index.html","_self")
+    //window.open("index.html","_self")
 }
 
 // This is the window onload function, it starts scripts that launch when the page is opened
@@ -448,6 +457,19 @@ function get_grid_location(cassette) {
 }
 
 
+//Cheks if status is set to archiving
+function check_archive() {
+    let status =  document.getElementById("status").value
+    let archive_location = document.getElementById("archive_location")
+        if (status == "Archiveing") {
+            archive_location.style.display="inline"
+        }
+        else {
+            archive_location.style.display="none"
+        }
+    check_partial(partial)
+}
+
 //Temproary way of storing and oupting data whilst waiting for DataBase to be establihed
 function write_to_file(complete) {
     for (i=0; i < complete.length; i++) {
@@ -455,6 +477,10 @@ function write_to_file(complete) {
         let [id_case, sample_id, sample_type] = unique_key.split("-")
         let image_location = get_grid_location(complete[i])
         let status =  document.getElementById("status").value
+        if (status == "Archiveing") {
+            let archive_location =  document.getElementById("archive_location").value
+            status = status + "_" + archive_location
+        }
         let date = new Date()
         let local_time = date.toLocaleTimeString()
         let local_date = date.toISOString().split('T')[0];

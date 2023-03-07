@@ -48,12 +48,13 @@
           </div>
         </div>
         <div id="subDiv">
-          <select id="status">
+          <select id="status" onchange="check_archive()">
             <option value="Archiveing">Archiveing</option>
-            <option value="embedding">Embedding</option>
-            <option value="processing">Processing</option>
-            <option value="sectioning">Sectioning</option>
+            <option value="Embedding">Embedding</option>
+            <option value="Processing">Processing</option>
+            <option value="Sectioning">Sectioning</option>
             </select>
+            <input id="archive_location" placeholder="Archive location" onkeyup="check_partial(partial)">
           <button id="submit">Submit</button>
         </div>
       </div>
