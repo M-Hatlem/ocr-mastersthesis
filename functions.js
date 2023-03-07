@@ -370,7 +370,7 @@ function check_partial(partial) {
 function submit() {
     write_to_file(complete)
     //TODO: Should idealy push complete list to database instead of writing to file
-    //window.open("index.html","_self")
+    window.open("index.html","_self")
 }
 
 // This is the window onload function, it starts scripts that launch when the page is opened
@@ -475,27 +475,28 @@ function write_to_file(complete) {
     for (i=0; i < complete.length; i++) {
         let unique_key = complete[i]["id"]
         let [id_case, sample_id, sample_type] = unique_key.split("-")
-        let image_location = get_grid_location(complete[i])
+        let cassette_location = get_grid_location(complete[i])
         let status =  document.getElementById("status").value
-        if (status == "Archiveing") {
-            let archive_location =  document.getElementById("archive_location").value
-            status = status + "_" + archive_location
-        }
         let date = new Date()
         let local_time = date.toLocaleTimeString()
         let local_date = date.toISOString().split('T')[0];
         let ISO_timestamp = date.toISOString()
-        //Writes down: Uniqe key, case id, sample id, type, cassette locationn in image, time, date(YY-MM-DD), ISO timestamp, staus
+        //Writes down: Uniqe key, case id, sample id, type, cassette locationn in image, time, date(YY-MM-DD), ISO timestamp, status, and archive_location when relevant
         let output = {
             "unique_key" : unique_key,
             "case _id" : id_case,
             "sample_id" : sample_id,
             "sample_type" : sample_type,
-            "image_location" : image_location,
+            "cassette_location" : cassette_location,
             "local_time" : local_time,
             "local_date" : local_date,
             "iso_timestamp" : ISO_timestamp,
-            "stauts" : status
+            "status" : status,
+            "archive_location" : "NOT_ARCHIVED"
+        }
+        if (status == "Archiveing") {
+            let archive_location =  document.getElementById("archive_location").value
+            output["archive_location"] = archive_location
         }
         JSON_output = JSON.stringify(output) + "\n"
         fs.appendFile('./Output/OutputData.JSON', JSON_output, err => {
