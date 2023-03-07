@@ -117,7 +117,7 @@ h1 {
 
   #close{
     color: white;
-    background-color: red;
+    background-color: #0926ff;
     text-align: center;
     position: inherit;
     display: inline;
@@ -131,7 +131,7 @@ h1 {
   
   .remove_rect{
     color: white;
-    background-color: #0926ff;
+    background-color: orangered;
     text-align: center;
     position: inherit;
     display: none;
