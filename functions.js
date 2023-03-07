@@ -220,6 +220,7 @@ function search_box(list, x, y, resize) {
             let height = list[i]["height"]/resize
             if (y > top && y < top  + height  && x > left  && x < left  + width ) {
                 let canvas = document.getElementById('canvas');
+                let del = document.getElementById("remove_perm_rect");
                 let popup_text = document. getElementsByClassName("popuptext");
                 popup.style.left = (left + (width/2) + canvas.offsetLeft) +"px";
                 popup.style.top = (top + canvas.offsetTop) + "px";
@@ -230,6 +231,7 @@ function search_box(list, x, y, resize) {
                 popup_text[1].value = values[1]
                 popup_text[2].value = values[2]
                 popup.classList.add("show");
+                del.style.display = "inline"
                 current_elm = list[i]
                 return true
             }
@@ -287,6 +289,8 @@ function update_lists(item_update) {
     }
     let popup = document.getElementById("Popup");
     popup.classList.remove("show")
+    let del = document.getElementById("remove_perm_rect");
+    del.style.display = "none"
     update_sidebar(complete, partial)
 }
 
@@ -306,15 +310,26 @@ function remove_temp_rect(){
 }
 
 
-// Removes a permantn rectangle //TODO FINISH 
+// Removes a permantn rectangle
 function remove_perm_rect() {
     let popup = document.getElementById("Popup");
     popup.classList.remove("show")
     let popup_text = document. getElementsByClassName("popuptext");
+    let del = document.getElementById("remove_perm_rect");
+    del.style.display = "none"
     popup_text[0].style.borderColor = "dimgrey";
     popup_text[1].style.borderColor = "dimgrey";
     popup_text[2].style.borderColor = "dimgrey";
-    // REMOVE POPUP ITEM FROM COMPLETE OR PARTIAL
+    // remove current elm from complete or partial
+    if (complete.includes(current_elm)) {
+        let i = complete.indexOf(current_elm)
+        complete.splice(i, 1)
+        }
+    else if (partial.includes(current_elm)) {
+        let i = partial.indexOf(current_elm)
+        partial.splice(i, 1)
+        check_partial(partial)
+        }
     redraw_canvas()
     update_sidebar(complete, partial)
 }
