@@ -11,6 +11,10 @@
           <video id="webcam" autoplay playsinline poster="assets/Loading_icon.gif">Camera not available</video>
           <button type="button" id="take_img_btn"onclick="take_image()">Take photo</button>
         </div>
+        <div>
+          <input type="checkbox" id="nn" value="True">
+          <label class="container">Neural Network based cassette detection (slower, but more accurate)</label>
+        </div>
         <span>Upload Image: </span>
         <input type="file" id="image-input" accept="image/jpeg, image/png, image/jpg" onchange="upload_image()">
       </div>

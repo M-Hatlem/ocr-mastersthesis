@@ -34,8 +34,9 @@ function stop_camera() {
 
 // passes the image to the backend
 function process_image(image) {
+    nn = get_nn()
     image_path = String(image["path"])
-    fetch(`http://127.0.0.1:5000/api/image/`+ image_path)
+    fetch(`http://127.0.0.1:5000/api/image/`+ image_path + "/" + nn)
       .then((response) => response.json())
       .then((data) => format_image(image, data));
 }
@@ -59,7 +60,6 @@ function take_image() {
     })
 }
 
-
 //Saves a blob as a photo
 function saveBlob(blob) {
     let reader = new FileReader()
@@ -72,7 +72,16 @@ function saveBlob(blob) {
     reader.readAsArrayBuffer(blob)
 }
 
-
+// Gets the status of the neural network checkbox
+function get_nn(){
+    if (document.getElementById('nn').checked) {
+        nn = "True"
+    }
+    else {
+        nn = "False"
+    }
+    return nn
+}
 
 // Formating the image with the data from the backend to highlight the detected casettes and sets up the canvas
 function format_image(image, data_list) {
@@ -225,7 +234,7 @@ function search_box(list, x, y, resize) {
                 popup.style.left = (left + (width/2) + canvas.offsetLeft) +"px";
                 popup.style.top = (top + canvas.offsetTop) + "px";
                 original = text
-                text = text.replace("NONE", "")
+                text = text.replace(/NONE/g, "")
                 values = text.split("-")
                 popup_text[0].value = values[0]
                 popup_text[1].value = values[1]
