@@ -15,7 +15,8 @@ Install instructions for DEV kit
    
    ```pip install flask tessaract cv2 numpy```
 5. Move the Python Venv into Ocr-Master/Python/ --> should look like Ocr-Master/Python/Venv....
-6. Install [Tessaract](https://tesseract-ocr.github.io/tessdoc/Downloads.html) and add it to the [console/Path](https://ironsoftware.com/csharp/ocr/blog/ocr-tools/tesseract-ocr-windows/)
-7. Run the app using "npm start" from Ocr-Master in command line
+6. Download [EAST text detector](https://www.dropbox.com/s/r2ingd0l3zt8hxs/frozen_east_text_detection.tar.gz?dl=1) and place the file in Ocr-Master/Python/
+7. Install [Tessaract](https://tesseract-ocr.github.io/tessdoc/Downloads.html) and add it to the [console/Path](https://ironsoftware.com/csharp/ocr/blog/ocr-tools/tesseract-ocr-windows/)
+8. Run the app using "npm start" from Ocr-Master in command line
     
     ```npm start```
