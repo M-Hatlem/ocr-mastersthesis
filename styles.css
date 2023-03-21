@@ -214,6 +214,7 @@ h1 {
 
 .innerSearch {
   display: inline-grid;
+  width: 200px;
 }
 
 .search {
@@ -221,4 +222,16 @@ h1 {
   left: -450px;
   top: -800px;
   block-size: 0px;
+}
+
+#search_inp {
+  text-align: center;
+}
+
+#status {
+  text-align: center;
+}
+
+#archive_location {
+  text-align: center;
 }
