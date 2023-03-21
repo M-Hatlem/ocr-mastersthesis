@@ -270,7 +270,7 @@ def east_detection(img):
         total_height.append(h)
         total_width.append(w)
 
-    # Merge boxes modifed from https://stackoverflow.com/questions/66490374/how-to-merge-nearby-bounding-boxes-opencv
+    # Merge boxes
     merge_height = int((sum(total_height) / len(total_height)) / 3)
     merge_width = int((sum(total_width) / len(total_width)) * 1.5)
     max_height = int(merge_height * 8)
@@ -294,35 +294,32 @@ def east_detection(img):
         # add padding to get some extra pixels around the number
         x = box[0][0] - padding
         if x <= 0:
-            x = x + padding
+            x = 0
         y = box[0][1] - padding
         if y <= 0:
-            y = y + padding
+            y = 0
         w = (box[1][0] - box[0][0]) + (padding*2)
         if x + w > original_width:
-            w = w - padding
+            w = original_width - x
         h = (box[1][1] - box[0][1]) + (padding*2)
         if y + h > origianl_height:
-            h = h - padding
+            h = origianl_height - y
         # if box is not too small add it to a list of images to be processed
         if w > width_threshold:
             images.append(
                 {
                     "image_number": img_numb,
-                    "image_data": img_gray[y:y + h, x:x + w],
+                    "image_data": process_image_part(img_gray[y:y + h, x:x + w]), # Pre-processes the image part
                     "x": x,
                     "y": y,
                     "width": w,
                     "height": h
                 })
 
-    # pre process images
-    for i in range(len(images)):
-        images[i]["image_data"] = process_image_part(images[i]["image_data"])
-
     return images
 
 
+# Box merge modifed from https://stackoverflow.com/questions/66490374/how-to-merge-nearby-bounding-boxes-opencv
 def merge_boxes(boxes, img, merge_height, merge_width, max_height, max_width, animate):
     highlight = [[0, 0], [1, 1]]
     points = [[[0, 0]]]
@@ -493,7 +490,7 @@ def process(url, nn):
         pro_images = east_detection(img)
     else:
         nn = False
-        print("Processing without NN", file=sys.stderr)
+        print("Processing with edge detection", file=sys.stderr)
         pro_images = pre_process(img)
     print("Starting OCR", file=sys.stderr)
     boxes = find_box(pro_images, nn)
