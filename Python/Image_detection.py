@@ -289,9 +289,9 @@ def east_detection(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_numb = 1
     images = []
-    padding = 10
+    padding = merge_height
     for box in boxes:
-        # add padding to get some extra pixels around the number
+        # add padding to get some extra pixels around the number, dynamic padding decided by average box height / 3
         x = box[0][0] - padding
         if x <= 0:
             x = 0
