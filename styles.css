@@ -9,6 +9,11 @@ li {
   margin-right: 15px;
 }
 
+ol {
+  overflow-y: scroll;
+  height: 350px;
+}
+
 h1 {
   font-size: larger;
 }
@@ -24,6 +29,7 @@ h1 {
   margin-left: 50px;
   border-style: solid;
   border-color: lawngreen;
+  height: 400px;
 }
 
 #sidebar-partial{
@@ -31,6 +37,7 @@ h1 {
   margin-left: 50px;
   border-style: solid;
   border-color: yellow;
+  height: 400px;
 }
 
 .page-1 {
@@ -235,3 +242,4 @@ h1 {
 #archive_location {
   text-align: center;
 }
+
