@@ -31,7 +31,7 @@ def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
 
 
 # Draw a box around each sentence and show the image
-def find_box(pro_images, nn):
+def find_box(pro_images):
     # loops through all images and applies OCR
     complete = []
     partial = []
@@ -107,7 +107,7 @@ def find_box(pro_images, nn):
             except IndexError:
                 pass
 
-        if nn and not found:
+        if not found:
             partial.append({
                 "id": "NONE-NONE-NONE",
                 "left":pro_images[j]["x"],
@@ -172,7 +172,7 @@ def pre_process(img):
         # Assumes input image is 3024x4032 and earlier in the code up-scaled 1.5x to 4536x6048.
         # continue with rectangular contours between a range of 750x200px and 1300x500px.
         # the numbers bellow must be changed with camera resolution and distance from cassettes.
-        if 750 < w < 1300 and 150 < h < 500:
+        if 750 < w < 1500 and 150 < h < 800:
             # Draws a rectangle on the contours that are recognized Only needed for testing
             # cv2.rectangle(img, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
@@ -212,6 +212,11 @@ def pre_process(img):
 
 
 def process_image_part(img):
+    # Dev mode for displaying before and after images for debugging
+    dev_display = False
+    if dev_display:
+        cv2.imshow('before', ResizeWithAspectRatio(img, height=1080, width=720))
+
     # Binarize the image with an OTSU threshold function making the pixels either black or white
     _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
@@ -220,7 +225,7 @@ def process_image_part(img):
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
     mask = img.copy()
     for c in cnts:
-        if cv2.contourArea(c) < 10000:
+        if cv2.contourArea(c) < 1000000:
             cv2.drawContours(mask, [c], -1, (0, 0, 0), -1)
     mask = 255 - mask
     img= cv2.bitwise_and(img, img, mask=mask)
@@ -228,6 +233,9 @@ def process_image_part(img):
 
     # Apply blur to smoothen the image and remove noise
     img = cv2.GaussianBlur(img, (9, 9), 0)
+    if dev_display:
+        cv2.imshow('after', ResizeWithAspectRatio(img, height=1080, width=720))
+        cv2.waitKey(0)
     return img
 
 
@@ -480,6 +488,7 @@ def decodeBoundingBoxes(scores, geometry, scoreThresh):
 
 @app.route('/api/image/<path:url>/<nn>',)
 def process(url, nn):
+    start_time = time.time()
     print("Starting image processing", file=sys.stderr)
     img = cv2.imread(url)
     # Rescale to 300DPI #TODO adjust for final camera setup
@@ -493,7 +502,9 @@ def process(url, nn):
         print("Processing with edge detection", file=sys.stderr)
         pro_images = pre_process(img)
     print("Starting OCR", file=sys.stderr)
-    boxes = find_box(pro_images, nn)
+    boxes = find_box(pro_images)
+    end_time = time.time()
+    print("Complete. Time elapsed: " + str(end_time - start_time), file=sys.stderr)
     return boxes
 
 
