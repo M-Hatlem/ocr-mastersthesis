@@ -107,7 +107,7 @@ def find_box(pro_images):
             except IndexError:
                 pass
 
-        if not found:
+        if not found and pro_images[j]["image_number"] != 0:
             partial.append({
                 "id": "NONE-NONE-NONE",
                 "left":pro_images[j]["x"],
