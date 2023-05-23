@@ -1,9 +1,9 @@
 # ocr-master
 
-Digitizing pathology lab workflows using image processing and OCR
+Digitizing pathology lab workflows using image processing and OCR -  mastersthesis
 
 Install instructions for DEV kit
-1. First clone from GitHUb with the commnad:
+1. First install Git and clone from GitHub with the commnad:
 
 
     ```git clone https://github.com/M-Hatlem/ocr-master```
