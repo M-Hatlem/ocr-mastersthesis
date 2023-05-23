@@ -1,4 +1,4 @@
-# ocr-master
+# ocr-mastersthesis
 
 Digitizing pathology lab workflows using image processing and OCR -  mastersthesis
 
