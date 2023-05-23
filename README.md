@@ -3,12 +3,12 @@
 Digitizing pathology lab workflows using image processing and OCR -  mastersthesis
 
 Install instructions for DEV kit
-1. First install Git and clone from GitHub with the commnad:
+1. First install Git and clone the repository from GitHub with the commnad:
 
 
     ```git clone https://github.com/M-Hatlem/ocr-masterthesis```
 2. Download [node](https://nodejs.org/en/download/) (recommended is latest LTS) (16.18.0 used for development)
-3. Install electron (Developed using version 21.0.1) by navigating to the Ocr-Master directory and running the command
+3. Install electron (Developed using version 21.0.1) by navigating to the Ocr-Master directory and running the command:
     
     ```npm install electron --save```
 4. Download [Python](https://www.python.org/downloads/) (Developed using Python 3.10) and setup a Venv with flask, tessaract and CV2 by running:
