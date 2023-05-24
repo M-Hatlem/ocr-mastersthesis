@@ -13,7 +13,7 @@ Install instructions for DEV kit
     ```npm install electron --save```
 4. Download [Python](https://www.python.org/downloads/) (Developed using Python 3.10) and setup a Venv with flask, tessaract and CV2 by running:
    
-   ```pip install flask tessaract cv2 numpy```
+   ```pip install flask tesseract cv2 numpy```
 5. Move the Python Venv into Ocr-Masterthesis/Python/ --> should look like Ocr-Masterthesis/Python/Venv....
 6. Download [EAST text detector](https://www.dropbox.com/s/r2ingd0l3zt8hxs/frozen_east_text_detection.tar.gz?dl=1) and place the file in Ocr-Masterthesis/Python/
 7. Install [Tessaract](https://tesseract-ocr.github.io/tessdoc/Downloads.html) and add it to the [console/Path](https://ironsoftware.com/csharp/ocr/blog/ocr-tools/tesseract-ocr-windows/)
