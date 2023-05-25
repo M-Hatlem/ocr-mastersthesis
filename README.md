@@ -2,7 +2,7 @@
 
 Digitizing pathology lab workflows using image processing and OCR -  mastersthesis
 
-Install instructions for DEV kit
+# Install instructions and requirements
 1. First install Git and clone the repository from GitHub with the commnad:
 
 
@@ -20,3 +20,26 @@ Install instructions for DEV kit
 8. Run the app using "npm start" from Ocr-Masterthesis in command line
     
     ```npm start```
+
+
+
+
+# The file structure
+
+The assetes folder includes icons and animations utilized in the user interface. The current iteration only includes a loading icon for when cassettes are being processed.
+
+The Output folder contains an empty JSON file. When the program is run the output will be appended to this file.
+
+The python folder includes the python scripts used for the image processing pipelines. When follwing the installation instructions below the user will need to add a python environment folder and the EAST files to this folder.
+
+README.MD includes information and install instructions.
+
+functions.js is a JavaScript file containing functions for the GUI.
+
+index.html is the HTML page for the GUI
+
+index.js is the electron index file and contains the code to start the user interface and the image processing python scripts.
+
+package-lock.json and package.json includes the node packages.
+
+style.ccs includes the CSS styling for the GUI.
